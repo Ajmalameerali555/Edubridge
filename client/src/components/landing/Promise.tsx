@@ -3,6 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Heart, TrendingUp, Lightbulb } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import studentImage4 from "@assets/student-image-4.jpeg";
 
 const promises = [
   {
@@ -50,9 +51,13 @@ export function Promise() {
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
           className="text-center mb-10 sm:mb-14 lg:mb-16"
         >
-          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-promise-kicker">
-            OUR COMMITMENT
-          </p>
+          <div className="inline-flex items-center gap-3 mb-4">
+            <div className="h-[2px] w-8 sm:w-12 bg-gradient-to-r from-transparent to-brand-mint" />
+            <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase" data-testid="text-promise-kicker">
+              OUR COMMITMENT
+            </p>
+            <div className="h-[2px] w-8 sm:w-12 bg-gradient-to-l from-transparent to-brand-mint" />
+          </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-ink tracking-tight leading-tight mb-5" data-testid="text-promise-headline">
             OUR PROMISE: SUPPORTIVE & CONFIDENCE-BUILDING
           </h2>
@@ -61,32 +66,52 @@ export function Promise() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-7">
-          {promises.map((promise, index) => {
-            const colors = colorClasses[promise.color];
-            const Icon = promise.icon;
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            {promises.map((promise, index) => {
+              const colors = colorClasses[promise.color];
+              const Icon = promise.icon;
 
-            return (
-              <motion.div
-                key={promise.title}
-                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
-                className="group bg-white rounded-[28px] p-7 sm:p-8 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-lg hover:shadow-brand-ink/[0.04] transition-all duration-300 text-center"
-                data-testid={`promise-card-${index}`}
-              >
-                <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${colors.bg} flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-105`}>
-                  <Icon className={`w-6 h-6 sm:w-7 sm:h-7 ${colors.icon}`} strokeWidth={1.8} />
-                </div>
-                <h3 className="text-sm sm:text-[15px] font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-promise-title-${index}`}>
-                  {promise.title}
-                </h3>
-                <p className="text-[13px] sm:text-sm text-brand-muted leading-relaxed" data-testid={`text-promise-desc-${index}`}>
-                  {promise.description}
-                </p>
-              </motion.div>
-            );
-          })}
+              return (
+                <motion.div
+                  key={promise.title}
+                  initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+                  className="group bg-white rounded-[28px] p-7 sm:p-8 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-lg hover:shadow-brand-ink/[0.04] transition-all duration-300 text-center"
+                  data-testid={`promise-card-${index}`}
+                >
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${colors.bg} flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-105`}>
+                    <Icon className={`w-6 h-6 sm:w-7 sm:h-7 ${colors.icon}`} strokeWidth={1.8} />
+                  </div>
+                  <h3 className="text-sm sm:text-[15px] font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-promise-title-${index}`}>
+                    {promise.title}
+                  </h3>
+                  <p className="text-[13px] sm:text-sm text-brand-muted leading-relaxed" data-testid={`text-promise-desc-${index}`}>
+                    {promise.description}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, x: prefersReducedMotion ? 0 : 24 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: prefersReducedMotion ? 0.2 : 0.6, delay: 0.4 }}
+            className="lg:col-span-4 hidden lg:block"
+          >
+            <div className="relative">
+              <div className="absolute -inset-3 bg-gradient-to-br from-brand-mint/10 via-brand-blue/5 to-transparent rounded-[36px] blur-xl -z-10" />
+              <div className="rounded-[28px] overflow-hidden shadow-xl shadow-brand-ink/[0.08]">
+                <img 
+                  src={studentImage4}
+                  alt="Happy student"
+                  className="w-full h-auto object-cover aspect-[3/4]"
+                />
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

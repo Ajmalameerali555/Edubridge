@@ -40,6 +40,11 @@ export function Hero() {
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
           className="absolute bottom-20 -right-32 w-[350px] h-[350px] rounded-full bg-brand-mint/[0.04] blur-3xl"
         />
+        <motion.div
+          animate={prefersReducedMotion ? {} : { y: [0, 10, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          className="absolute top-1/2 right-1/4 w-[200px] h-[200px] rounded-full bg-brand-yellow/[0.03] blur-3xl"
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto w-full">
@@ -104,7 +109,8 @@ export function Hero() {
               variants={itemVariants}
               className="relative aspect-video w-full max-w-lg mx-auto lg:max-w-none"
             >
-              <div className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-brand-ink/[0.1]">
+              <div className="absolute -inset-4 bg-gradient-to-br from-brand-blue/10 via-brand-mint/10 to-brand-pink/10 rounded-[36px] blur-xl -z-10" />
+              <div className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-brand-ink/[0.12]">
                 <img 
                   src={heroImage} 
                   alt="Online tutoring session"

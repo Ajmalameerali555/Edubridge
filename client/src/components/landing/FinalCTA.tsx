@@ -21,6 +21,11 @@ export function FinalCTA() {
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-brand-mint/[0.04] blur-3xl"
         />
+        <motion.div
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-brand-blue/[0.02] via-brand-mint/[0.02] to-brand-pink/[0.02] blur-3xl"
+        />
       </div>
 
       <motion.div
