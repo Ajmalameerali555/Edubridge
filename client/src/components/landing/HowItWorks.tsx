@@ -14,7 +14,7 @@ const steps = [
     number: "02",
     title: "SNAPSHOT SESSION",
     color: "mint",
-    bullets: ["Your child attends a 20–30 minute one-on-one session with us to assess learning pace and communication."],
+    bullets: ["Your child attends a 20-30 minute one-on-one session with us to assess learning pace and communication."],
   },
   {
     number: "03",
