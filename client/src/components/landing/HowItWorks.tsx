@@ -40,6 +40,9 @@ export function HowItWorks() {
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
           className="text-center mb-14 sm:mb-18"
         >
+          <div className="inline-block mb-6">
+            <div className="h-1 w-12 bg-brand-blue rounded-full mx-auto mb-4" />
+          </div>
           <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-howitworks-kicker">
             THE ROADMAP TO SUCCESS
           </p>

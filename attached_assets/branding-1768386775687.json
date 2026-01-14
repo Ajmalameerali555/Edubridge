@@ -1,0 +1,103 @@
+{
+  "colorScheme": "dark",
+  "fonts": [
+    {
+      "family": "sans-serif",
+      "count": 59
+    },
+    {
+      "family": "Helvetica Neue",
+      "count": 44
+    },
+    {
+      "family": "Helvetica",
+      "count": 44
+    },
+    {
+      "family": "Arial",
+      "count": 44
+    },
+    {
+      "family": "Proxima Nova Regular",
+      "count": 41
+    },
+    {
+      "family": "Proxima Nova ExtraBold",
+      "count": 2
+    },
+    {
+      "family": "Proxima Nova Bold",
+      "count": 1
+    }
+  ],
+  "colors": {
+    "primary": "#171544",
+    "accent": "#1BB76E",
+    "background": "#2E3035",
+    "textPrimary": "#2E3035",
+    "link": "#1BB76E"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Proxima Nova Regular",
+      "heading": "Proxima Nova Regular"
+    },
+    "fontStacks": {
+      "body": [
+        "Proxima Nova Regular",
+        "Helvetica Neue",
+        "Helvetica",
+        "Arial",
+        "sans-serif"
+      ],
+      "heading": [
+        "Proxima Nova Regular",
+        "Helvetica Neue",
+        "Helvetica",
+        "Arial",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Proxima Nova Regular",
+        "Helvetica Neue",
+        "Helvetica",
+        "Arial",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "16px",
+      "h2": "16px",
+      "body": "16px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 8,
+    "borderRadius": "0px"
+  },
+  "components": {},
+  "images": {
+    "logo": null,
+    "favicon": "https://s.imgur.com/images/favicon-32x32.png",
+    "ogImage": "File saved at: attached_assets/ogImage.jpg"
+  },
+  "__framework_hints": [],
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

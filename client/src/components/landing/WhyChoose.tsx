@@ -3,7 +3,7 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { ShieldCheck, User, Calendar, Video, CreditCard, Monitor } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import studentsImage from "@assets/IMG_7559_1768386171250.jpeg";
+import studentsImage from "@assets/imgur_image_2.webp";
 
 const features = [
   {
@@ -52,6 +52,9 @@ export function WhyChoose() {
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
           className="text-center mb-14 sm:mb-18 lg:mb-20"
         >
+          <div className="inline-block mb-6">
+            <div className="h-1 w-12 bg-brand-blue rounded-full mx-auto mb-4" />
+          </div>
           <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-why-choose-kicker">
             THE EDUBRIDGE ADVANTAGE
           </p>
@@ -61,7 +64,7 @@ export function WhyChoose() {
         </motion.div>
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-5">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -88,12 +91,12 @@ export function WhyChoose() {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: prefersReducedMotion ? 0 : 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: 0.3 }}
-            className="lg:col-span-4 hidden lg:block"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: prefersReducedMotion ? 0.2 : 0.6, delay: 0.2 }}
+            className="lg:col-span-5 hidden lg:flex items-center justify-center"
           >
-            <div className="rounded-[24px] overflow-hidden shadow-lg">
+            <div className="rounded-[28px] overflow-hidden shadow-xl w-full max-w-md">
               <img 
                 src={studentsImage}
                 alt="Students learning together"

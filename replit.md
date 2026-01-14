@@ -33,6 +33,16 @@ The project follows strict design guidelines defined in `design_guidelines.md`:
 - Mobile-first responsive design
 - Accessibility: respects `prefers-reduced-motion` for animations
 
+### Media Assets
+- **Hero Video**: `gemini_generated_video_1E4A2E5D_1768386171250.mp4` - autoplays muted, looping
+- **Student Images**: 
+  - `IMG_7559_1768386171250.jpeg` - 3 students with headphones (used in FinalCTA)
+  - `IMG_7561_1768386171250.jpeg` - 3 happy students celebrating (used in Subjects)
+  - `imgur_image_1.webp` - student image (used in PerfectFor)
+  - `imgur_image_2.webp` - students learning (used in WhyChoose)
+- All images have 28px border radius and shadow-xl styling
+- Section headers have a blue decorative line above the kicker text for visual alignment
+
 ### Build System
 - Development: Vite dev server with HMR
 - Production: Custom build script using esbuild for server bundling and Vite for client

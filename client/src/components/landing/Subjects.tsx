@@ -26,13 +26,31 @@ export function Subjects() {
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
           className="text-center mb-12 sm:mb-16"
         >
+          <div className="inline-block mb-6">
+            <div className="h-1 w-12 bg-brand-blue rounded-full mx-auto mb-4" />
+          </div>
           <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase" data-testid="text-subjects-kicker">
             SUBJECTS
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: prefersReducedMotion ? 0.2 : 0.6, delay: 0.1 }}
+            className="order-2 lg:order-1"
+          >
+            <div className="rounded-[28px] overflow-hidden shadow-xl">
+              <img 
+                src={happyStudentsImage}
+                alt="Happy students"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </motion.div>
+
+          <div className="grid grid-cols-2 gap-4 order-1 lg:order-2">
             {subjects.map((subject, index) => {
               const Icon = subject.icon;
               return (
@@ -54,21 +72,6 @@ export function Subjects() {
               );
             })}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, x: prefersReducedMotion ? 0 : 20 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: 0.2 }}
-            className="hidden lg:block"
-          >
-            <div className="rounded-[24px] overflow-hidden shadow-lg">
-              <img 
-                src={happyStudentsImage}
-                alt="Happy students"
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>

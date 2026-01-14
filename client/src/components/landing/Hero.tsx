@@ -1,9 +1,20 @@
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useEffect, useRef } from "react";
 import heroVideo from "@assets/gemini_generated_video_1E4A2E5D_1768386171250.mp4";
 
 export function Hero() {
   const prefersReducedMotion = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.play().catch(() => {
+        // Autoplay was prevented, try again on user interaction
+      });
+    }
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -27,11 +38,6 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-20 -left-32 w-[400px] h-[400px] rounded-full bg-brand-blue/[0.03] blur-3xl" />
-        <div className="absolute bottom-20 -right-32 w-[350px] h-[350px] rounded-full bg-brand-mint/[0.03] blur-3xl" />
-      </div>
-
       <div className="relative max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <motion.div
@@ -96,10 +102,12 @@ export function Hero() {
             >
               <div className="relative rounded-[24px] overflow-hidden shadow-2xl shadow-brand-ink/[0.08]">
                 <video
+                  ref={videoRef}
                   autoPlay
                   muted
                   loop
                   playsInline
+                  preload="auto"
                   className="w-full h-full object-cover"
                   data-testid="video-hero"
                 >
