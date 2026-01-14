@@ -6,12 +6,28 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: ".5625rem", /* 9px */
-        md: ".375rem", /* 6px */
-        sm: ".1875rem", /* 3px */
+        lg: ".5625rem",
+        md: ".375rem",
+        sm: ".1875rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+        "4xl": "1.75rem",
+        "5xl": "2rem",
+        "6xl": "2.25rem",
+        full: "9999px",
       },
       colors: {
-        // Flat / base colors (regular buttons)
+        brand: {
+          blue: "var(--blue)",
+          mint: "var(--mint)",
+          yellow: "var(--yellow)",
+          pink: "var(--pink)",
+          navy: "var(--navy)",
+          ink: "var(--ink)",
+          muted: "var(--muted)",
+          card: "var(--card)",
+          bg: "var(--bg)",
+        },
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
