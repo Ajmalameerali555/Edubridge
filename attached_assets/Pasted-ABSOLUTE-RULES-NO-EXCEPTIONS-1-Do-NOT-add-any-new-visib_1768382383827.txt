@@ -1,0 +1,234 @@
+ABSOLUTE RULES (NO EXCEPTIONS)
+	1.	Do NOT add any new visible text anywhere (no placeholders, no labels, no extra headings, no cookie banner, no tooltips, no helper copy).
+	2.	Do NOT edit/replace any existing text. Use the Approved Copy exactly as provided below, character-for-character.
+	3.	Do NOT change the color palette. Only use the exact variables below + white + ultra-light neutral borders derived from ink with opacity.
+	4.	Do NOT change section order or meaning. Layout can be refined but structure must match.
+	5.	Output a fully working Replit project. No TODOs. No missing files.
+
+⸻
+
+STACK (Must Use)
+	•	Vite + React + TypeScript
+	•	TailwindCSS
+	•	Framer Motion
+	•	Icons: lucide-react (or inline SVG) with consistent stroke width
+
+⸻
+
+BRAND COLOR TOKENS (Must Use Exactly)
+
+Define CSS variables and use them everywhere:
+	•	--blue: #2F6BFF
+	•	--mint: #34D399
+	•	--yellow: #FFC83D
+	•	--pink: #FF4D6D
+	•	--navy: #0B1630
+	•	--ink: #0F172A
+	•	--muted: #64748B
+	•	--card: #F8FAFF
+	•	--bg: #FFFFFF
+
+Allowed neutrals ONLY:
+	•	white
+	•	borders like rgba(15,23,42,0.06) and shadows with low opacity
+
+NO other accent colors.
+
+⸻
+
+TYPOGRAPHY (Premium)
+	•	Font: Inter
+	•	Headings: 800–900 weight, tight line height, slightly negative tracking
+	•	Kicker: uppercase + wide letter spacing (0.2em), small size
+	•	Body: 15–16px mobile, 16–18px desktop, line-height ~1.6
+
+⸻
+
+GLOBAL UI STYLE
+	•	Mobile-first. Content column centered.
+	•	Radii: extra round (cards ~28–36px, buttons pill ~9999px)
+	•	Cards: border 1px soft + subtle shadow
+	•	Icon chips: rounded-square with tinted background using existing brand colors at low opacity
+	•	Ambient background: subtle radial/blur blobs (blue/mint) at extremely low opacity
+
+⸻
+
+MOTION + SCROLL AMBIENCE (Tasteful, Trustworthy)
+	•	Smooth scrolling
+	•	Reveal on scroll for sections/cards (fade + slight up + blur resolve)
+	•	Tiny parallax background blobs on scroll (disable if prefers-reduced-motion)
+	•	Button micro-interactions (hover/press)
+	•	Drawer: slide-in + backdrop blur fade
+
+Respect prefers-reduced-motion.
+
+⸻
+
+REQUIRED COMPONENTS / STRUCTURE
+
+Create clean components:
+	•	Navbar (logo left + hamburger, GET STARTED button right)
+	•	DrawerMenu (opens from left, dark navy)
+	•	Hero
+	•	WhyChoose (6 feature cards)
+	•	Curriculum
+	•	Subjects
+	•	HowItWorks (4 bars with colors; bullets under first 3 only)
+	•	PerfectFor (checklist cards)
+	•	Promise (3 cards)
+	•	FinalCTA
+	•	Footer area stays dark navy (as shown)
+
+Use arrays for content but render only Approved Copy.
+
+⸻
+
+PAGE ORDER (Must Match)
+	1.	Navbar
+	2.	Hero
+	3.	Why Choose EduBridge Learning (6 cards)
+	4.	Curriculum (3 options)
+	5.	Subjects (4 items)
+	6.	How EduBridge Learning Works (4 steps)
+	7.	Who EduBridge Learning is Perfect For (5 checklist items)
+	8.	Our Promise (3 cards)
+	9.	Ready to Get Started (CTA)
+	10.	Drawer + dark navy footer area like screenshot
+
+⸻
+
+NAVBAR + DRAWER REQUIREMENTS
+
+Navbar
+	•	Left: blue rounded square with hamburger icon + EduBridge logo text stack:
+	•	“EduBridge”
+	•	“LEARNING” smaller under
+	•	Right: pill button GET STARTED in brand blue with soft shadow
+
+Drawer (when hamburger tapped)
+	•	Full height panel, background --navy
+	•	Top area includes a rounded blue square with “E” and the text “EDUBRIDGE”
+	•	Include the exact menu sections and items from Approved Copy
+	•	Include short description line from Approved Copy
+	•	No extra items, no extra text
+
+⸻
+
+VISUAL ACCURACY NOTES (Important)
+	•	Headline emphasis: “BUILDING FUTURES” in blue, rest in ink (same text, just styling).
+	•	Feature cards: large, airy, soft border, icon chip near top-left.
+	•	Curriculum options: big rounded pills with a small blue dot on left.
+	•	Step bars: big colored rounded bars with step number + title inside:
+	•	01 blue, 02 mint, 03 yellow, 04 pink
+	•	Promise cards: icon chip with soft tint (mint/blue/pink style)
+	•	Final CTA button huge pill like hero CTA.
+
+⸻
+
+APPROVED COPY (Use ONLY these exact strings)
+
+Navbar
+	•	GET STARTED
+	•	EduBridge
+	•	LEARNING
+
+Hero
+	•	CONFIDENCE BUILDING, ONE-ON-ONE
+	•	ONLINE TUTORING FOR GRADES 1 TO 10.
+	•	BRIDGING KNOWLEDGE, BUILDING FUTURES
+	•	EduBridge Learning connects students with expert tutors for personalized online learning, helping every child achieve their full potential.
+	•	GET YOUR FREE LEARNING SNAPSHOT
+
+Why Choose
+	•	THE EDUBRIDGE ADVANTAGE
+	•	WHY CHOOSE EDUBRIDGE LEARNING?
+	•	EXPERT AND VERIFIED TUTORS
+	•	Our educators are meticulously vetted and matched carefully to your child’s specific needs.
+	•	PERSONALIZED LEARNING APPROACH
+	•	Bespoke educational plans that adapt to your child’s unique learning pace and style.
+	•	FLEXIBLE SCHEDULING
+	•	Learning that fits your life. Easily schedule and manage sessions at your convenience.
+	•	SAFE & MONITORED ONLINE CLASSES
+	•	Every session is recorded and monitored in our secure digital environment for peace of mind.
+	•	AFFORDABLE, TRANSPARENT PRICING
+	•	Premium education shouldn’t be a mystery. Clear plans with no hidden fees or long contracts.
+	•	EASY-TO-USE LEARNING PLATFORM
+	•	A world-class digital hub designed to make online learning intuitive, fun, and effective.
+
+Curriculum
+	•	CURRICULUM
+	•	CBSE
+	•	(Indian Curriculum)
+	•	IGCSE
+	•	(British Curriculum)
+	•	IB: PYP AND MYP
+	•	(International Baccalaureate)
+
+Subjects
+	•	SUBJECTS
+	•	MATHEMATICS
+	•	ENGLISH
+	•	SCIENCE (PHY, CHEM, BIO)
+	•	CODING
+
+How it Works
+	•	THE ROADMAP TO SUCCESS
+	•	HOW EDUBRIDGE LEARNING WORKS
+	•		1.	SHARE NEEDS
+	•	Fill out a short form to help us understand your child before any class begins.
+	•		2.	SNAPSHOT SESSION
+	•	Your child attends a 20–30 minute one-on-one session with us to assess learning pace and communication.
+	•		3.	TUTOR MATCH & PLAN
+	•	We share a detailed learning summary and discuss the best academic plan for your child.
+	•		4.	START LEARNING
+
+Perfect For
+	•	TARGETED SUPPORT
+	•	WHO EDUBRIDGE LEARNING IS PERFECT FOR:
+	•	Children who need extra academic support.
+	•	Shy or anxious learners.
+	•	Students who struggle in group classes.
+	•	Busy parents who want reliable, structured help.
+	•	Families looking for quality without pressure.
+
+Our Promise
+	•	OUR COMMITMENT
+	•	OUR PROMISE: SUPPORTIVE & CONFIDENCE-BUILDING
+	•	Learning should feel safe and encouraging. Never scary or stressful. We focus on:
+	•	ENCOURAGEMENT, NOT FEAR.
+	•	We build confidence through positive reinforcement and constructive feedback.
+	•	PROGRESS, NOT PRESSURE.
+	•	Every child learns at their own pace. We measure growth, not just grades.
+	•	UNDERSTANDING, NOT COMPARISON.
+	•	We celebrate individual breakthroughs and focus on deep conceptual clarity.
+
+Final CTA
+	•	READY TO GET STARTED?
+	•	Give your child the support they deserve without stress.
+	•	GET YOUR FREE LEARNING SNAPSHOT
+
+Drawer Menu
+	•	EDUBRIDGE
+	•	Bridging the gap between academic rigor and student success across the UAE with world-class mentors.
+	•	PLATFORM
+	•	HOW IT WORKS
+	•	FIND TUTORS
+	•	OFFERS
+	•	SUPPORT
+	•	HELP CENTER
+	•	CONTACT US
+	•	PRIVACY
+
+⸻
+
+OUTPUT (Must Deliver)
+
+Generate the complete working project:
+	•	package.json, vite.config.ts, tailwind.config.js, postcss.config.js
+	•	src/main.tsx, src/App.tsx
+	•	Components folder with clean code
+	•	Fully working animations + drawer
+	•	Mobile matches screenshots in feel and spacing; desktop is premium responsive
+	•	No extra text anywhere
+
+Build now.
