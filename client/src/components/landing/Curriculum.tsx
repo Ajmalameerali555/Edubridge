@@ -15,8 +15,36 @@ export function Curriculum() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
-      <div className="max-w-3xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <svg className="absolute top-0 left-0 w-full h-16 text-brand-blue/[0.03]" preserveAspectRatio="none" viewBox="0 0 1200 100">
+          <path d="M0,50 Q300,0 600,50 T1200,50 L1200,100 L0,100 Z" fill="currentColor" />
+        </svg>
+        <svg className="absolute bottom-0 left-0 w-full h-16 text-brand-mint/[0.03]" preserveAspectRatio="none" viewBox="0 0 1200 100">
+          <path d="M0,50 Q300,100 600,50 T1200,50 L1200,0 L0,0 Z" fill="currentColor" />
+        </svg>
+        
+        <motion.div
+          animate={prefersReducedMotion ? {} : { x: [0, 15, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 right-[10%]"
+        >
+          <svg className="w-12 h-12 text-brand-yellow/15" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+            <circle cx="50" cy="50" r="35" />
+          </svg>
+        </motion.div>
+
+        <svg className="absolute bottom-1/3 left-[5%] w-20 h-20 text-brand-pink/10" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="20" cy="20" r="3" />
+          <circle cx="50" cy="20" r="3" />
+          <circle cx="80" cy="20" r="3" />
+          <circle cx="20" cy="50" r="3" />
+          <circle cx="50" cy="50" r="3" />
+          <circle cx="80" cy="50" r="3" />
+        </svg>
+      </div>
+
+      <div className="max-w-3xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}

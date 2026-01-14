@@ -25,10 +25,10 @@ const promises = [
   },
 ];
 
-const colorClasses: Record<string, { bg: string; icon: string; accent: string }> = {
-  mint: { bg: "bg-brand-mint/[0.08]", icon: "text-brand-mint", accent: "from-brand-mint/10" },
-  blue: { bg: "bg-brand-blue/[0.08]", icon: "text-brand-blue", accent: "from-brand-blue/10" },
-  pink: { bg: "bg-brand-pink/[0.08]", icon: "text-brand-pink", accent: "from-brand-pink/10" },
+const colorClasses: Record<string, { bg: string; icon: string; accent: string; glow: string }> = {
+  mint: { bg: "bg-brand-mint/[0.08]", icon: "text-brand-mint", accent: "from-brand-mint/10", glow: "bg-brand-mint/20" },
+  blue: { bg: "bg-brand-blue/[0.08]", icon: "text-brand-blue", accent: "from-brand-blue/10", glow: "bg-brand-blue/20" },
+  pink: { bg: "bg-brand-pink/[0.08]", icon: "text-brand-pink", accent: "from-brand-pink/10", glow: "bg-brand-pink/20" },
 };
 
 export function Promise() {
@@ -37,8 +37,47 @@ export function Promise() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
-      <div className="max-w-6xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-brand-mint/[0.06] blur-3xl"
+        />
+        <motion.div
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-1/4 -right-20 w-72 h-72 rounded-full bg-brand-blue/[0.06] blur-3xl"
+        />
+
+        <svg className="absolute top-10 right-[15%] w-16 h-16 text-brand-yellow/10" viewBox="0 0 100 100" fill="currentColor">
+          <polygon points="50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40" />
+        </svg>
+
+        <motion.div
+          animate={prefersReducedMotion ? {} : { rotate: -360 }}
+          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-20 left-[10%] w-12 h-12"
+        >
+          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-pink/15">
+            <rect x="15" y="15" width="70" height="70" rx="10" />
+          </svg>
+        </motion.div>
+
+        <svg className="absolute top-1/2 left-[5%] w-20 h-20 text-brand-blue/8" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="20" cy="20" r="2.5" />
+          <circle cx="40" cy="20" r="2.5" />
+          <circle cx="60" cy="20" r="2.5" />
+          <circle cx="20" cy="40" r="2.5" />
+          <circle cx="40" cy="40" r="2.5" />
+          <circle cx="60" cy="40" r="2.5" />
+          <circle cx="20" cy="60" r="2.5" />
+          <circle cx="40" cy="60" r="2.5" />
+          <circle cx="60" cy="60" r="2.5" />
+        </svg>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
@@ -71,6 +110,11 @@ export function Promise() {
                 data-testid={`promise-card-${index}`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-b ${colors.accent} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <motion.div
+                  animate={prefersReducedMotion ? {} : { scale: [1, 1.5, 1], opacity: [0, 0.3, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 }}
+                  className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full ${colors.glow} blur-2xl`}
+                />
                 <div className="relative">
                   <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${colors.bg} flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-105`}>
                     <Icon className={`w-6 h-6 sm:w-7 sm:h-7 ${colors.icon}`} strokeWidth={1.8} />

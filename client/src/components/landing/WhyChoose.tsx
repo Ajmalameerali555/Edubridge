@@ -56,8 +56,61 @@ export function WhyChoose() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-bg">
-      <div className="max-w-7xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-bg relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={prefersReducedMotion ? {} : { rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-20 -right-20 w-64 h-64"
+        >
+          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5" className="w-full h-full text-brand-blue/10">
+            <circle cx="50" cy="50" r="45" />
+            <circle cx="50" cy="50" r="35" />
+            <circle cx="50" cy="50" r="25" />
+          </svg>
+        </motion.div>
+        
+        <svg className="absolute bottom-20 left-10 w-28 h-28 text-brand-mint/8" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="10" cy="10" r="2.5" />
+          <circle cx="25" cy="10" r="2.5" />
+          <circle cx="40" cy="10" r="2.5" />
+          <circle cx="55" cy="10" r="2.5" />
+          <circle cx="10" cy="25" r="2.5" />
+          <circle cx="25" cy="25" r="2.5" />
+          <circle cx="40" cy="25" r="2.5" />
+          <circle cx="55" cy="25" r="2.5" />
+          <circle cx="10" cy="40" r="2.5" />
+          <circle cx="25" cy="40" r="2.5" />
+          <circle cx="40" cy="40" r="2.5" />
+          <circle cx="55" cy="40" r="2.5" />
+          <circle cx="10" cy="55" r="2.5" />
+          <circle cx="25" cy="55" r="2.5" />
+          <circle cx="40" cy="55" r="2.5" />
+          <circle cx="55" cy="55" r="2.5" />
+        </svg>
+
+        <motion.div
+          animate={prefersReducedMotion ? {} : { y: [0, -15, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 left-[8%]"
+        >
+          <svg className="w-8 h-8 text-brand-yellow/20" viewBox="0 0 100 100" fill="currentColor">
+            <polygon points="50,10 61,40 95,40 68,60 79,90 50,70 21,90 32,60 5,40 39,40" />
+          </svg>
+        </motion.div>
+
+        <motion.div
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.1, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-[12%]"
+        >
+          <svg className="w-10 h-10 text-brand-pink/15" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+            <path d="M50 10 L90 90 L10 90 Z" />
+          </svg>
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}

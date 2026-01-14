@@ -50,8 +50,41 @@ export function HowItWorks() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
-      <div className="max-w-4xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-blue/10 to-transparent" />
+        
+        <motion.div
+          animate={prefersReducedMotion ? {} : { rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          className="absolute top-20 right-[8%] w-16 h-16"
+        >
+          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-mint/15">
+            <path d="M50 10 L90 50 L50 90 L10 50 Z" />
+          </svg>
+        </motion.div>
+
+        <svg className="absolute bottom-10 left-[5%] w-24 h-24 text-brand-yellow/8" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="15" cy="15" r="3" />
+          <circle cx="35" cy="15" r="3" />
+          <circle cx="55" cy="15" r="3" />
+          <circle cx="75" cy="15" r="3" />
+          <circle cx="15" cy="35" r="3" />
+          <circle cx="35" cy="35" r="3" />
+          <circle cx="55" cy="35" r="3" />
+          <circle cx="75" cy="35" r="3" />
+        </svg>
+
+        <motion.div
+          animate={prefersReducedMotion ? {} : { scale: [1, 1.15, 1] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 left-[12%]"
+        >
+          <div className="w-6 h-6 rounded-full border-2 border-brand-pink/15" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-4xl mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
@@ -66,7 +99,9 @@ export function HowItWorks() {
           </h2>
         </motion.div>
 
-        <div className="space-y-5 sm:space-y-6">
+        <div className="space-y-5 sm:space-y-6 relative">
+          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-blue/20 via-brand-mint/20 via-brand-yellow/20 to-brand-pink/20 hidden sm:block" style={{ height: 'calc(100% - 40px)', top: '20px' }} />
+          
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
@@ -74,14 +109,16 @@ export function HowItWorks() {
               animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
               transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
               data-testid={`step-${step.number}`}
+              className="relative"
             >
               <div
-                className={`${colorClasses[step.color]} rounded-[28px] sm:rounded-[32px] px-6 sm:px-8 py-5 sm:py-6 flex items-center gap-5 sm:gap-6 shadow-lg ${shadowClasses[step.color]}`}
+                className={`${colorClasses[step.color]} rounded-[28px] sm:rounded-[32px] px-6 sm:px-8 py-5 sm:py-6 flex items-center gap-5 sm:gap-6 shadow-lg ${shadowClasses[step.color]} relative overflow-hidden`}
               >
-                <span className="text-white/70 font-black text-2xl sm:text-3xl tracking-tight" data-testid={`text-step-number-${step.number}`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent" />
+                <span className="text-white/70 font-black text-2xl sm:text-3xl tracking-tight relative z-10" data-testid={`text-step-number-${step.number}`}>
                   {step.number}
                 </span>
-                <span className="text-white font-extrabold text-base sm:text-lg tracking-tight" data-testid={`text-step-title-${step.number}`}>
+                <span className="text-white font-extrabold text-base sm:text-lg tracking-tight relative z-10" data-testid={`text-step-title-${step.number}`}>
                   {step.title}
                 </span>
               </div>
