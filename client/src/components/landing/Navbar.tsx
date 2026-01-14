@@ -3,7 +3,11 @@ import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { DrawerMenu } from "./DrawerMenu";
 
-export function Navbar() {
+interface NavbarProps {
+  onOpenAssessment: () => void;
+}
+
+export function Navbar({ onOpenAssessment }: NavbarProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
@@ -38,6 +42,7 @@ export function Navbar() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={onOpenAssessment}
               className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-brand-blue text-white font-semibold text-sm sm:text-base shadow-lg shadow-brand-blue/25 transition-shadow hover:shadow-xl hover:shadow-brand-blue/30"
               data-testid="button-get-started-nav"
             >

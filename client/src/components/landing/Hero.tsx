@@ -3,16 +3,18 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useEffect, useRef } from "react";
 import heroVideo from "@assets/gemini_generated_video_1E4A2E5D_1768386171250.mp4";
 
-export function Hero() {
+interface HeroProps {
+  onOpenAssessment: () => void;
+}
+
+export function Hero({ onOpenAssessment }: HeroProps) {
   const prefersReducedMotion = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
-      video.play().catch(() => {
-        // Autoplay was prevented, try again on user interaction
-      });
+      video.play().catch(() => {});
     }
   }, []);
 
@@ -82,6 +84,7 @@ export function Hero() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={onOpenAssessment}
                 className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full bg-brand-blue text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-blue/20 transition-all hover:shadow-xl hover:shadow-brand-blue/25"
                 data-testid="button-hero-cta"
               >

@@ -4,7 +4,11 @@ import { useRef } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import studentsImage from "@assets/IMG_7559_1768386171250.jpeg";
 
-export function FinalCTA() {
+interface FinalCTAProps {
+  onOpenAssessment: () => void;
+}
+
+export function FinalCTA({ onOpenAssessment }: FinalCTAProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
@@ -46,6 +50,7 @@ export function FinalCTA() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={onOpenAssessment}
               className="w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full bg-brand-blue text-white font-bold text-base sm:text-lg shadow-lg shadow-brand-blue/20 transition-all hover:shadow-xl hover:shadow-brand-blue/25"
               data-testid="button-final-cta"
             >
