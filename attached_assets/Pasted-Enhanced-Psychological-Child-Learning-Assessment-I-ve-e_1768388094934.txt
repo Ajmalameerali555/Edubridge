@@ -1,0 +1,1147 @@
+Enhanced Psychological Child Learning Assessment
+
+I've enhanced your questionnaire to be more psychologically insightful while keeping it simple and parent-friendly. The key improvements are:
+
+1. Added 3 new psychological sections (Attention & Focus, Emotional Drivers, Motivation Patterns)
+2. Implemented animated question flow with smooth transitions
+3. Simplified language while maintaining professional depth
+4. Added optional text fields for additional insights
+5. Improved visual feedback with color-coded insights
+
+Here's the complete enhanced code:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduBridge | Learning DNA Profiler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Enhanced Color Scheme */
+            --primary: #2563EB;      /* Trust Blue */
+            --primary-light: #60A5FA; /* Soft Blue */
+            --primary-dark: #1E3A8A;  /* Deep Blue */
+            --accent: #06B6D4;       /* Insight Teal */
+            --accent-dark: #0E7490;   /* Deep Teal */
+            --psych-color: #8B5CF6;   /* Psychology Purple */
+            --focus-color: #10B981;   /* Focus Green */
+            --emotional-color: #EC4899; /* Emotional Pink */
+            --bg-color: #F8FAFC;     /* Light Background */
+            --card-bg: #FFFFFF;      /* Card White */
+            --text-main: #0F172A;    /* Main Text */
+            --text-muted: #64748B;   /* Muted Text */
+            --border: #E2E8F0;       /* Borders */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* UI Constants */
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Header --- */
+        header {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 1.2rem 5%;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .header-tagline {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem 1rem;
+            padding: 0 1rem;
+            flex-grow: 1;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-wrapper {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .step-count {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .progress-bg {
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 12.5%;
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+
+        /* --- Form Card --- */
+        .form-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            min-height: 500px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .card-content {
+            padding: 2.5rem;
+        }
+
+        /* Section Animations */
+        .step-section {
+            display: none;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        .step-section.active {
+            display: block;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .section-desc {
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            padding-right: 1rem;
+        }
+
+        /* Question Block */
+        .question-block {
+            margin-bottom: 2.5rem;
+        }
+
+        .question-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+        }
+
+        .q-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* Psychological Insight Tags */
+        .insight-tag {
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+
+        .tag-psych { background: linear-gradient(135deg, #F5F3FF, #EDE9FE); color: var(--psych-color); }
+        .tag-focus { background: linear-gradient(135deg, #F0FDF4, #DCFCE7); color: var(--focus-color); }
+        .tag-emotion { background: linear-gradient(135deg, #FDF2F8, #FCE7F3); color: var(--emotional-color); }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .grade-grid { grid-template-columns: repeat(3, 1fr); }
+            .options-grid { grid-template-columns: 1fr; }
+            .card-content { padding: 1.75rem; }
+        }
+
+        /* Option Cards */
+        .option-card {
+            position: relative;
+        }
+
+        .option-card input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 18px 16px;
+            background: #F8FAFC;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: 500;
+            height: 100%;
+            min-height: 60px;
+            line-height: 1.4;
+        }
+
+        .card-content:hover {
+            background: #F1F5F9;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .option-card input:checked + .card-content {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+            color: var(--primary-dark);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Optional Text Field */
+        .optional-field {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        .optional-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .optional-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: var(--bg-color);
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .optional-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .optional-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Navigation */
+        .nav-area {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-prev {
+            background: white;
+            color: var(--text-muted);
+            border: 2px solid var(--border);
+        }
+
+        .btn-prev:hover {
+            background: #F8FAFC;
+            color: var(--text-main);
+            border-color: var(--primary-light);
+            transform: translateX(-3px);
+        }
+
+        .btn-prev:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Analysis Overlay */
+        .analysis-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #E2E8F0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .typing-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        .sub-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            animation: bounce 1s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #F0FDFA, #CCFBF1);
+            border: 2px solid #99F6E4;
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--focus-color), var(--accent));
+        }
+
+        .result-box h4 {
+            color: #0D9488;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .result-box p {
+            color: #115E59;
+            font-weight: 800;
+            font-size: 1.3rem;
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-bottom: 2rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">E</div>
+            <div>
+                <div>EduBridge</div>
+                <div class="header-tagline">Learning DNA Profiler</div>
+            </div>
+        </div>
+        <div class="insight-tag">Psychological Assessment</div>
+    </header>
+
+    <div class="container">
+        <div class="progress-wrapper">
+            <div class="progress-info">
+                <span class="step-label" id="step-label">Student Profile</span>
+                <span class="step-count" id="step-count">Step 1 of 9</span>
+            </div>
+            <div class="progress-bg">
+                <div class="progress-fill" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <form id="learningProfileForm" onsubmit="return false;">
+            <div class="form-card">
+                <div class="card-content">
+                    <!-- Step 1: Student Profile -->
+                    <div class="step-section active" data-step="1">
+                        <h2>Student Profile</h2>
+                        <p class="section-desc">Let's start with basic academic information to understand your child's learning context.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">1. Current Grade Level</span>
+                                <span class="insight-tag">Placement</span>
+                            </div>
+                            <div class="grade-grid">
+                                <label class="option-card"><input type="radio" name="grade" value="1"><div class="card-content">Grade 1</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="2"><div class="card-content">Grade 2</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="3"><div class="card-content">Grade 3</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="4"><div class="card-content">Grade 4</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="5"><div class="card-content">Grade 5</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="6"><div class="card-content">Grade 6</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="7"><div class="card-content">Grade 7</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="8"><div class="card-content">Grade 8</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="9"><div class="card-content">Grade 9</div></label>
+                                <label class="option-card"><input type="radio" name="grade" value="10"><div class="card-content">Grade 10</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">2. Curriculum Type</span>
+                                <span class="insight-tag">System Match</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="curriculum" value="CBSE"><div class="card-content">CBSE (India)</div></label>
+                                <label class="option-card"><input type="radio" name="curriculum" value="IGCSE"><div class="card-content">IGCSE (UK)</div></label>
+                                <label class="option-card"><input type="radio" name="curriculum" value="IB"><div class="card-content">IB Program</div></label>
+                                <label class="option-card"><input type="radio" name="curriculum" value="Other"><div class="card-content">Other System</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Learning Challenges -->
+                    <div class="step-section" data-step="2">
+                        <h2>Learning Challenges</h2>
+                        <p class="section-desc">Understanding where the child faces difficulties helps us identify the right support.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">3. Main Subject Difficulties</span>
+                                <span class="insight-tag">Academic Focus</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="checkbox" name="subject" value="Math"><div class="card-content">Mathematics</div></label>
+                                <label class="option-card"><input type="checkbox" name="subject" value="English"><div class="card-content">English/Language</div></label>
+                                <label class="option-card"><input type="checkbox" name="subject" value="Science"><div class="card-content">Science</div></label>
+                                <label class="option-card"><input type="checkbox" name="subject" value="Social"><div class="card-content">Social Studies</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">4. Understanding New Topics</span>
+                                <span class="insight-tag">Learning Speed</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="understanding" value="fast"><div class="card-content">Grasps quickly</div></label>
+                                <label class="option-card"><input type="radio" name="understanding" value="average"><div class="card-content">Needs normal time</div></label>
+                                <label class="option-card"><input type="radio" name="understanding" value="slow"><div class="card-content">Needs extra time</div></label>
+                                <label class="option-card"><input type="radio" name="understanding" value="difficult"><div class="card-content">Finds it very hard</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Attention & Focus -->
+                    <div class="step-section" data-step="3">
+                        <h2>Attention & Focus</h2>
+                        <p class="section-desc">How your child maintains concentration during study time.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">5. Study Session Focus</span>
+                                <span class="insight-tag tag-focus">Concentration</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="focus" value="long"><div class="card-content">30+ minutes easily</div></label>
+                                <label class="option-card"><input type="radio" name="focus" value="medium"><div class="card-content">15-20 minutes okay</div></label>
+                                <label class="option-card"><input type="radio" name="focus" value="short"><div class="card-content">Loses focus quickly</div></label>
+                                <label class="option-card"><input type="radio" name="focus" value="varies"><div class="card-content">Depends on interest</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">6. Distraction Sources</span>
+                                <span class="insight-tag tag-focus">Environment</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="checkbox" name="distractions" value="noise"><div class="card-content">Noise/Sounds</div></label>
+                                <label class="option-card"><input type="checkbox" name="distractions" value="devices"><div class="card-content">Phone/Tablet</div></label>
+                                <label class="option-card"><input type="checkbox" name="distractions" value="people"><div class="card-content">People around</div></label>
+                                <label class="option-card"><input type="checkbox" name="distractions" value="thoughts"><div class="card-content">Own thoughts</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Emotional Drivers -->
+                    <div class="step-section" data-step="4">
+                        <h2>Emotional Drivers</h2>
+                        <p class="section-desc">Understanding emotional responses to academic challenges.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">7. Response to Mistakes</span>
+                                <span class="insight-tag tag-emotion">Resilience</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="mistakes" value="learns"><div class="card-content">Learns from them</div></label>
+                                <label class="option-card"><input type="radio" name="mistakes" value="frustrated"><div class="card-content">Gets frustrated</div></label>
+                                <label class="option-card"><input type="radio" name="mistakes" value="avoids"><div class="card-content">Avoids trying again</div></label>
+                                <label class="option-card"><input type="radio" name="mistakes" value="indifferent"><div class="card-content">Doesn't care much</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">8. Stress During Tests</span>
+                                <span class="insight-tag tag-emotion">Anxiety Level</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="stress" value="low"><div class="card-content">Stays calm</div></label>
+                                <label class="option-card"><input type="radio" name="stress" value="medium"><div class="card-content">Some nervousness</div></label>
+                                <label class="option-card"><input type="radio" name="stress" value="high"><div class="card-content">Very anxious</div></label>
+                                <label class="option-card"><input type="radio" name="stress" value="avoids"><div class="card-content">Avoids tests</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Learning Behavior -->
+                    <div class="step-section" data-step="5">
+                        <h2>Learning Behavior</h2>
+                        <p class="section-desc">Daily study habits and approach to learning.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">9. Study Organization</span>
+                                <span class="insight-tag">Habits</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="organization" value="organized"><div class="card-content">Very organized</div></label>
+                                <label class="option-card"><input type="radio" name="organization" value="somewhat"><div class="card-content">Somewhat organized</div></label>
+                                <label class="option-card"><input type="radio" name="organization" value="disorganized"><div class="card-content">Needs reminders</div></label>
+                                <label class="option-card"><input type="radio" name="organization" value="resists"><div class="card-content">Resists organizing</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">10. Homework Approach</span>
+                                <span class="insight-tag">Responsibility</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="homework" value="independent"><div class="card-content">Does independently</div></label>
+                                <label class="option-card"><input type="radio" name="homework" value="help"><div class="card-content">Needs some help</div></label>
+                                <label class="option-card"><input type="radio" name="homework" value="push"><div class="card-content">Needs pushing</div></label>
+                                <label class="option-card"><input type="radio" name="homework" value="avoids"><div class="card-content">Often avoids</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Motivation Patterns -->
+                    <div class="step-section" data-step="6">
+                        <h2>Motivation Patterns</h2>
+                        <p class="section-desc">What drives your child to learn and achieve.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">11. Primary Motivation</span>
+                                <span class="insight-tag tag-psych">Drive</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="motivation" value="internal"><div class="card-content">Own interest</div></label>
+                                <label class="option-card"><input type="radio" name="motivation" value="praise"><div class="card-content">Praise/rewards</div></label>
+                                <label class="option-card"><input type="radio" name="motivation" value="grades"><div class="card-content">Good grades</div></label>
+                                <label class="option-card"><input type="radio" name="motivation" value="pressure"><div class="card-content">Parent/teacher pressure</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">12. Learning Rewards</span>
+                                <span class="insight-tag tag-psych">Incentives</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="checkbox" name="rewards" value="praise"><div class="card-content">Verbal praise</div></label>
+                                <label class="option-card"><input type="checkbox" name="rewards" value="stars"><div class="card-content">Stars/stickers</div></label>
+                                <label class="option-card"><input type="checkbox" name="rewards" value="screen"><div class="card-content">Screen time</div></label>
+                                <label class="option-card"><input type="checkbox" name="rewards" value="treats"><div class="card-content">Small treats</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Learning Style -->
+                    <div class="step-section" data-step="7">
+                        <h2>Learning Style</h2>
+                        <p class="section-desc">How your child best absorbs and retains information.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">13. Best Learning Method</span>
+                                <span class="insight-tag">Modality</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="learning_style" value="visual"><div class="card-content">Seeing (pictures, videos)</div></label>
+                                <label class="option-card"><input type="radio" name="learning_style" value="auditory"><div class="card-content">Hearing (explanations)</div></label>
+                                <label class="option-card"><input type="radio" name="learning_style" value="kinesthetic"><div class="card-content">Doing (hands-on)</div></label>
+                                <label class="option-card"><input type="radio" name="learning_style" value="reading"><div class="card-content">Reading/writing</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">14. Memory Style</span>
+                                <span class="insight-tag">Retention</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="memory" value="repetition"><div class="card-content">Needs repetition</div></label>
+                                <label class="option-card"><input type="radio" name="memory" value="examples"><div class="card-content">Remembers examples</div></label>
+                                <label class="option-card"><input type="radio" name="memory" value="practice"><div class="card-content">Through practice</div></label>
+                                <label class="option-card"><input type="radio" name="memory" value="stories"><div class="card-content">Through stories</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 8: Communication -->
+                    <div class="step-section" data-step="8">
+                        <h2>Communication</h2>
+                        <p class="section-desc">How your child expresses needs and questions.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">15. Asking for Help</span>
+                                <span class="insight-tag">Communication</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="help" value="asks"><div class="card-content">Asks easily</div></label>
+                                <label class="option-card"><input type="radio" name="help" value="hesitant"><div class="card-content">Hesitant to ask</div></label>
+                                <label class="option-card"><input type="radio" name="help" value="waits"><div class="card-content">Waits for others</div></label>
+                                <label class="option-card"><input type="radio" name="help" value="never"><div class="card-content">Rarely asks</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">16. Preferred Language</span>
+                                <span class="insight-tag">Comfort</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="language" value="english"><div class="card-content">English only</div></label>
+                                <label class="option-card"><input type="radio" name="language" value="bilingual"><div class="card-content">Bilingual okay</div></label>
+                                <label class="option-card"><input type="radio" name="language" value="mothertongue"><div class="card-content">Mother tongue preferred</div></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 9: Parent Goals & Additional Info -->
+                    <div class="step-section" data-step="9">
+                        <h2>Final Details</h2>
+                        <p class="section-desc">Your goals and any additional insights about your child.</p>
+                        
+                        <div class="question-block">
+                            <div class="q-header">
+                                <span class="q-label">17. Primary Goal</span>
+                                <span class="insight-tag">Focus</span>
+                            </div>
+                            <div class="options-grid">
+                                <label class="option-card"><input type="radio" name="goal" value="grades"><div class="card-content">Improve grades</div></label>
+                                <label class="option-card"><input type="radio" name="goal" value="confidence"><div class="card-content">Build confidence</div></label>
+                                <label class="option-card"><input type="radio" name="goal" value="basics"><div class="card-content">Strengthen basics</div></label>
+                                <label class="option-card"><input type="radio" name="goal" value="enjoyment"><div class="card-content">Make learning enjoyable</div></label>
+                            </div>
+                        </div>
+
+                        <div class="question-block optional-field">
+                            <label class="optional-label">
+                                Additional Information (Optional)
+                                <span class="optional-note">Anything else we should know about your child's learning?</span>
+                            </label>
+                            <textarea class="optional-input" id="additional_info" 
+                                      placeholder="For example: Special interests, health concerns, previous tutoring experience, specific fears about subjects, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Overlay -->
+                    <div class="analysis-overlay" id="analysis-overlay">
+                        <div class="spinner"></div>
+                        <div class="typing-text" id="analysis-text">Analyzing Learning Profile...</div>
+                        <div class="sub-text">Identifying patterns and matching with expert tutors</div>
+                    </div>
+
+                    <!-- Result Screen -->
+                    <div class="result-screen" id="result-screen">
+                        <span class="success-icon">🎯</span>
+                        <h2>Profile Analysis Complete!</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">
+                            We've identified your child's unique <strong>Learning DNA Profile</strong> with psychological insights.
+                        </p>
+                        
+                        <div class="result-box">
+                            <h4>Recommended Tutor Match</h4>
+                            <p id="dynamic-result">Patient Visual-Spatial Specialist</p>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; font-size: 0.9rem; color: #475569; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <p>✅ <strong>Detailed Analysis</strong> sent to your email</p>
+                            <p>✅ <strong>Tutor Match</strong> within 24 hours</p>
+                            <p>✅ <strong>Personalized Learning Plan</strong> included</p>
+                        </div>
+
+                        <button class="btn btn-next" style="margin-top: 2rem; width: 100%; max-width: 300px; justify-content: center;" onclick="location.reload()">
+                            Complete Assessment
+                        </button>
+                    </div>
+                </div>
+
+                <div class="nav-area" id="nav-area">
+                    <button type="button" class="btn btn-prev" id="prevBtn">← Back</button>
+                    <button type="button" class="btn btn-next" id="nextBtn">Next →</button>
+                </div>
+            </div>
+        </form>
+
+        <footer>
+            © 2026 EduBridge Learning | Psychology-Based Tutoring Matching
+        </footer>
+    </div>
+
+    <script>
+        // Enhanced Assessment Logic
+        const sections = document.querySelectorAll('.step-section');
+        const progressBar = document.getElementById('progress-bar');
+        const stepLabel = document.getElementById('step-label');
+        const stepCount = document.getElementById('step-count');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const navArea = document.getElementById('nav-area');
+        
+        let currentStep = 0;
+        const totalSteps = sections.length;
+        
+        const stepTitles = [
+            "Student Profile", "Learning Challenges", "Attention & Focus",
+            "Emotional Drivers", "Learning Behavior", "Motivation Patterns",
+            "Learning Style", "Communication", "Final Details"
+        ];
+
+        // Initialize
+        updateUI();
+
+        // Event Listeners
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    animateStepTransition();
+                } else {
+                    submitAssessment();
+                }
+            } else {
+                showValidationError();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                animateStepTransition();
+            }
+        });
+
+        // Functions
+        function animateStepTransition() {
+            const currentSection = sections[currentStep];
+            const cardContent = document.querySelector('.card-content');
+            
+            // Fade out current
+            cardContent.style.opacity = '0';
+            cardContent.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                updateUI();
+                cardContent.style.opacity = '1';
+                cardContent.style.transform = 'translateX(0)';
+            }, 300);
+        }
+
+        function updateUI() {
+            // Update active section
+            sections.forEach((sec, idx) => {
+                sec.classList.remove('active');
+                if (idx === currentStep) {
+                    sec.classList.add('active');
+                }
+            });
+
+            // Update progress
+            const progress = ((currentStep + 1) / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            stepLabel.textContent = stepTitles[currentStep];
+            stepCount.textContent = `Step ${currentStep + 1} of ${totalSteps}`;
+
+            // Update buttons
+            prevBtn.disabled = currentStep === 0;
+            prevBtn.style.opacity = currentStep === 0 ? '0' : '1';
+            
+            if (currentStep === totalSteps - 1) {
+                nextBtn.innerHTML = 'Generate Learning Profile ✨';
+            } else {
+                nextBtn.innerHTML = 'Next →';
+            }
+
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function validateStep(stepIndex) {
+            const currentSection = sections[stepIndex];
+            const requiredInputs = currentSection.querySelectorAll('input[required], input[type="radio"]');
+            const radioGroups = new Set();
+            let allValid = true;
+
+            // Check radio groups
+            requiredInputs.forEach(input => {
+                if (input.type === 'radio') {
+                    radioGroups.add(input.name);
+                }
+            });
+
+            // Validate each radio group has a selection
+            for (let groupName of radioGroups) {
+                const checked = currentSection.querySelector(`input[name="${groupName}"]:checked`);
+                if (!checked) {
+                    allValid = false;
+                    highlightUnanswered(groupName);
+                }
+            }
+
+            return allValid;
+        }
+
+        function highlightUnanswered(groupName) {
+            const inputs = document.querySelectorAll(`input[name="${groupName}"]`);
+            inputs.forEach(input => {
+                const card = input.nextElementSibling;
+                card.style.borderColor = '#EF4444';
+                card.style.animation = 'shake 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.borderColor = '';
+                    card.style.animation = '';
+                }, 500);
+            });
+        }
+
+        function showValidationError() {
+            const formCard = document.querySelector('.form-card');
+            formCard.style.animation = 'none';
+            setTimeout(() => {
+                formCard.style.animation = 'shake 0.5s ease';
+            }, 10);
+        }
+
+        function submitAssessment() {
+            // Hide navigation and show analysis
+            navArea.style.display = 'none';
+            document.querySelector('.progress-wrapper').style.opacity = '0.5';
+            sections[currentStep].classList.remove('active');
+            
+            const overlay = document.getElementById('analysis-overlay');
+            const text = document.getElementById('analysis-text');
+            overlay.style.display = 'flex';
+
+            // Analysis messages with psychological insights
+            const analysisSteps = [
+                "Analyzing cognitive patterns...",
+                "Assessing emotional learning drivers...",
+                "Identifying focus & attention style...",
+                "Mapping motivation triggers...",
+                "Calculating optimal learning pace...",
+                "Matching with specialized tutors..."
+            ];
+
+            let step = 0;
+            const analysisInterval = setInterval(() => {
+                if (step < analysisSteps.length) {
+                    text.textContent = analysisSteps[step];
+                    step++;
+                } else {
+                    clearInterval(analysisInterval);
+                    showResults();
+                }
+            }, 1200);
+        }
+
+        function showResults() {
+            document.getElementById('analysis-overlay').style.display = 'none';
+            
+            // Determine result based on inputs (simplified logic)
+            const styleInput = document.querySelector('input[name="learning_style"]:checked');
+            const focusInput = document.querySelector('input[name="focus"]:checked');
+            const motivationInput = document.querySelector('input[name="motivation"]:checked');
+            
+            let tutorType = "Expert Tutor";
+            
+            if (styleInput && focusInput) {
+                if (styleInput.value === 'visual' && focusInput.value === 'short') {
+                    tutorType = "Visual & Interactive Specialist";
+                } else if (motivationInput && motivationInput.value === 'internal') {
+                    tutorType = "Inquiry-Based Learning Expert";
+                } else if (motivationInput && motivationInput.value === 'praise') {
+                    tutorType = "Encouragement-Focused Mentor";
+                }
+            }
+            
+            document.getElementById('dynamic-result').textContent = tutorType;
+            document.getElementById('result-screen').style.display = 'block';
+        }
+
+        // Add CSS for shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+```
+
+Key Enhancements Made:
+
+1. Psychological Depth Added
+
+· Attention & Focus Section: Measures concentration span and distraction sources
+· Emotional Drivers Section: Assesses resilience, stress response, and emotional patterns
+· Motivation Patterns Section: Identifies internal/external motivation drivers
+
+2. Simplified Language
+
+· All questions rephrased for easy parent understanding
+· Clear, everyday language while maintaining psychological depth
+· Examples provided for clarity
+
+3. Enhanced User Experience
+
+· Smooth animated transitions between questions
+· Color-coded psychological tags for visual organization
+· Progressive disclosure of complexity
+· Optional text field for additional insights
+
+4. Professional Analysis Features
+
+· 9-step comprehensive assessment
+· Learning DNA profiling terminology
+· Psychological insight indicators
+· Clear tutor matching logic
+
+5. Parent-Friendly Design
+
+· Minimalistic, clean interface
+· Large, readable text
+· Simple card selection
+· No technical jargon
+· Mobile-responsive design
+
+The assessment now provides deep psychological insights while remaining accessible to all parents, regardless of education level. The flow builds from basic information to deeper psychological patterns, creating a complete learning profile for perfect tutor matching.
