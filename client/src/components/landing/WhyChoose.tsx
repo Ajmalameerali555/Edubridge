@@ -43,36 +43,36 @@ const features = [
   },
 ];
 
-const colorClasses: Record<string, { bg: string; icon: string }> = {
-  blue: { bg: "bg-brand-blue/10", icon: "text-brand-blue" },
-  mint: { bg: "bg-brand-mint/10", icon: "text-brand-mint" },
-  yellow: { bg: "bg-brand-yellow/10", icon: "text-brand-yellow" },
-  pink: { bg: "bg-brand-pink/10", icon: "text-brand-pink" },
+const colorClasses: Record<string, { bg: string; icon: string; accent: string }> = {
+  blue: { bg: "bg-brand-blue/[0.08]", icon: "text-brand-blue", accent: "bg-brand-blue" },
+  mint: { bg: "bg-brand-mint/[0.08]", icon: "text-brand-mint", accent: "bg-brand-mint" },
+  yellow: { bg: "bg-brand-yellow/[0.08]", icon: "text-brand-yellow", accent: "bg-brand-yellow" },
+  pink: { bg: "bg-brand-pink/[0.08]", icon: "text-brand-pink", accent: "bg-brand-pink" },
 };
 
 export function WhyChoose() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-16 sm:py-24 px-4 bg-brand-bg">
-      <div className="max-w-6xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-bg">
+      <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 30, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: prefersReducedMotion ? 0.2 : 0.6 }}
-          className="text-center mb-12 sm:mb-16"
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
+          className="text-center mb-14 sm:mb-18 lg:mb-20"
         >
-          <p className="text-xs sm:text-sm font-bold tracking-[0.2em] text-brand-muted mb-3" data-testid="text-why-choose-kicker">
+          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-why-choose-kicker">
             THE EDUBRIDGE ADVANTAGE
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-ink tracking-tight" data-testid="text-why-choose-headline">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-ink tracking-tight leading-tight" data-testid="text-why-choose-headline">
             WHY CHOOSE EDUBRIDGE LEARNING?
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-7">
           {features.map((feature, index) => {
             const colors = colorClasses[feature.color];
             const Icon = feature.icon;
@@ -80,19 +80,20 @@ export function WhyChoose() {
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 40, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
                 animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-                transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.1 }}
-                className="bg-brand-card rounded-[28px] p-6 sm:p-8 border border-[rgba(15,23,42,0.06)] shadow-sm hover:shadow-md transition-shadow"
+                transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.08 }}
+                className="group relative bg-white rounded-[32px] p-7 sm:p-8 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-lg hover:shadow-brand-ink/[0.04] transition-all duration-300"
                 data-testid={`card-feature-${index}`}
               >
-                <div className={`w-12 h-12 rounded-xl ${colors.bg} flex items-center justify-center mb-5`}>
-                  <Icon className={`w-6 h-6 ${colors.icon}`} strokeWidth={2} />
+                <div className="absolute top-0 left-8 w-12 h-1 rounded-b-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundColor: `var(--${feature.color})` }} />
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${colors.bg} flex items-center justify-center mb-5 sm:mb-6`}>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colors.icon}`} strokeWidth={1.8} />
                 </div>
-                <h3 className="text-sm sm:text-base font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-feature-title-${index}`}>
+                <h3 className="text-sm sm:text-[15px] font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-feature-title-${index}`}>
                   {feature.title}
                 </h3>
-                <p className="text-sm sm:text-[15px] text-brand-muted leading-relaxed" data-testid={`text-feature-desc-${index}`}>
+                <p className="text-[13px] sm:text-sm text-brand-muted leading-relaxed" data-testid={`text-feature-desc-${index}`}>
                   {feature.description}
                 </p>
               </motion.div>

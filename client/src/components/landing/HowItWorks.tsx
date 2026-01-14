@@ -37,41 +37,48 @@ const colorClasses: Record<string, string> = {
   pink: "bg-brand-pink",
 };
 
+const shadowClasses: Record<string, string> = {
+  blue: "shadow-brand-blue/20",
+  mint: "shadow-brand-mint/20",
+  yellow: "shadow-brand-yellow/20",
+  pink: "shadow-brand-pink/20",
+};
+
 export function HowItWorks() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-16 sm:py-24 px-4 bg-brand-bg">
-      <div className="max-w-3xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
+      <div className="max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 30, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: prefersReducedMotion ? 0.2 : 0.6 }}
-          className="text-center mb-12 sm:mb-16"
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
+          className="text-center mb-14 sm:mb-18 lg:mb-20"
         >
-          <p className="text-xs sm:text-sm font-bold tracking-[0.2em] text-brand-muted mb-3" data-testid="text-howitworks-kicker">
+          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-howitworks-kicker">
             THE ROADMAP TO SUCCESS
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-ink tracking-tight" data-testid="text-howitworks-headline">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-ink tracking-tight leading-tight" data-testid="text-howitworks-headline">
             HOW EDUBRIDGE LEARNING WORKS
           </h2>
         </motion.div>
 
-        <div className="space-y-4">
+        <div className="space-y-5 sm:space-y-6">
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
-              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -40, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -32, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
               animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
-              transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.12 }}
+              transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
               data-testid={`step-${step.number}`}
             >
               <div
-                className={`${colorClasses[step.color]} rounded-[28px] sm:rounded-[32px] px-6 sm:px-8 py-5 sm:py-6 flex items-center gap-4 sm:gap-6`}
+                className={`${colorClasses[step.color]} rounded-[28px] sm:rounded-[32px] px-6 sm:px-8 py-5 sm:py-6 flex items-center gap-5 sm:gap-6 shadow-lg ${shadowClasses[step.color]}`}
               >
-                <span className="text-white/80 font-black text-xl sm:text-2xl" data-testid={`text-step-number-${step.number}`}>
+                <span className="text-white/70 font-black text-2xl sm:text-3xl tracking-tight" data-testid={`text-step-number-${step.number}`}>
                   {step.number}
                 </span>
                 <span className="text-white font-extrabold text-base sm:text-lg tracking-tight" data-testid={`text-step-title-${step.number}`}>
@@ -79,11 +86,11 @@ export function HowItWorks() {
                 </span>
               </div>
               {step.bullets.length > 0 && (
-                <div className="mt-3 ml-6 sm:ml-10 space-y-2">
+                <div className="mt-4 ml-4 sm:ml-6 pl-6 sm:pl-8 border-l-2 border-[rgba(15,23,42,0.06)]">
                   {step.bullets.map((bullet, bulletIndex) => (
                     <p
                       key={bulletIndex}
-                      className="text-sm sm:text-[15px] text-brand-muted leading-relaxed"
+                      className="text-[13px] sm:text-[15px] text-brand-muted leading-relaxed"
                       data-testid={`text-step-bullet-${step.number}-${bulletIndex}`}
                     >
                       {bullet}

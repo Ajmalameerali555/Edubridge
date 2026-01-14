@@ -25,38 +25,38 @@ const promises = [
   },
 ];
 
-const colorClasses: Record<string, { bg: string; icon: string }> = {
-  mint: { bg: "bg-brand-mint/10", icon: "text-brand-mint" },
-  blue: { bg: "bg-brand-blue/10", icon: "text-brand-blue" },
-  pink: { bg: "bg-brand-pink/10", icon: "text-brand-pink" },
+const colorClasses: Record<string, { bg: string; icon: string; accent: string }> = {
+  mint: { bg: "bg-brand-mint/[0.08]", icon: "text-brand-mint", accent: "from-brand-mint/10" },
+  blue: { bg: "bg-brand-blue/[0.08]", icon: "text-brand-blue", accent: "from-brand-blue/10" },
+  pink: { bg: "bg-brand-pink/[0.08]", icon: "text-brand-pink", accent: "from-brand-pink/10" },
 };
 
 export function Promise() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-16 sm:py-24 px-4 bg-brand-bg">
-      <div className="max-w-5xl mx-auto">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
+      <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 30, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: prefersReducedMotion ? 0.2 : 0.6 }}
-          className="text-center mb-8 sm:mb-12"
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
+          className="text-center mb-10 sm:mb-14 lg:mb-16"
         >
-          <p className="text-xs sm:text-sm font-bold tracking-[0.2em] text-brand-muted mb-3" data-testid="text-promise-kicker">
+          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase mb-4" data-testid="text-promise-kicker">
             OUR COMMITMENT
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-ink tracking-tight mb-4" data-testid="text-promise-headline">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black text-brand-ink tracking-tight leading-tight mb-5" data-testid="text-promise-headline">
             OUR PROMISE: SUPPORTIVE & CONFIDENCE-BUILDING
           </h2>
-          <p className="text-sm sm:text-base text-brand-muted max-w-xl mx-auto" data-testid="text-promise-description">
+          <p className="text-[13px] sm:text-sm md:text-base text-brand-muted max-w-xl mx-auto leading-relaxed" data-testid="text-promise-description">
             Learning should feel safe and encouraging. Never scary or stressful. We focus on:
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-7">
           {promises.map((promise, index) => {
             const colors = colorClasses[promise.color];
             const Icon = promise.icon;
@@ -64,21 +64,24 @@ export function Promise() {
             return (
               <motion.div
                 key={promise.title}
-                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 40, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 32, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
                 animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-                transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.1 }}
-                className="bg-brand-card rounded-[28px] p-6 sm:p-8 border border-[rgba(15,23,42,0.06)] shadow-sm hover:shadow-md transition-shadow text-center"
+                transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+                className="group relative bg-white rounded-[32px] p-7 sm:p-8 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-lg hover:shadow-brand-ink/[0.04] transition-all duration-300 text-center overflow-hidden"
                 data-testid={`promise-card-${index}`}
               >
-                <div className={`w-14 h-14 rounded-xl ${colors.bg} flex items-center justify-center mx-auto mb-5`}>
-                  <Icon className={`w-7 h-7 ${colors.icon}`} strokeWidth={2} />
+                <div className={`absolute inset-0 bg-gradient-to-b ${colors.accent} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className="relative">
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${colors.bg} flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-105`}>
+                    <Icon className={`w-6 h-6 sm:w-7 sm:h-7 ${colors.icon}`} strokeWidth={1.8} />
+                  </div>
+                  <h3 className="text-sm sm:text-[15px] font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-promise-title-${index}`}>
+                    {promise.title}
+                  </h3>
+                  <p className="text-[13px] sm:text-sm text-brand-muted leading-relaxed" data-testid={`text-promise-desc-${index}`}>
+                    {promise.description}
+                  </p>
                 </div>
-                <h3 className="text-sm sm:text-base font-extrabold text-brand-ink tracking-tight mb-3" data-testid={`text-promise-title-${index}`}>
-                  {promise.title}
-                </h3>
-                <p className="text-sm text-brand-muted leading-relaxed" data-testid={`text-promise-desc-${index}`}>
-                  {promise.description}
-                </p>
               </motion.div>
             );
           })}

@@ -11,36 +11,36 @@ const curriculumOptions = [
 
 export function Curriculum() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-16 sm:py-24 px-4 bg-brand-bg">
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
       <div className="max-w-3xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 30, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-          transition={{ duration: prefersReducedMotion ? 0.2 : 0.6 }}
-          className="text-center mb-10 sm:mb-14"
+          transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
+          className="text-center mb-12 sm:mb-16"
         >
-          <p className="text-xs sm:text-sm font-bold tracking-[0.2em] text-brand-muted" data-testid="text-curriculum-kicker">
+          <p className="text-[10px] sm:text-xs font-bold tracking-[0.25em] text-brand-muted uppercase" data-testid="text-curriculum-kicker">
             CURRICULUM
           </p>
         </motion.div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 sm:space-y-5">
           {curriculumOptions.map((option, index) => (
             <motion.div
               key={option.name}
-              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -30, filter: prefersReducedMotion ? "blur(0px)" : "blur(8px)" }}
+              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
               animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
-              transition={{ duration: prefersReducedMotion ? 0.2 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.1 }}
-              className="bg-brand-card rounded-full px-6 sm:px-8 py-4 sm:py-5 border border-[rgba(15,23,42,0.06)] flex items-center gap-4 hover:shadow-md transition-shadow cursor-pointer"
+              transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
+              className="group bg-white rounded-full px-6 sm:px-8 py-5 sm:py-6 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-md hover:border-brand-blue/20 transition-all duration-300 flex items-center gap-4 sm:gap-5 cursor-pointer"
               data-testid={`curriculum-${option.name.toLowerCase().replace(/[:\s]+/g, "-")}`}
             >
-              <div className="w-3 h-3 rounded-full bg-brand-blue flex-shrink-0" />
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                <span className="text-base sm:text-lg font-extrabold text-brand-ink tracking-tight" data-testid={`text-curriculum-name-${index}`}>
+              <div className="w-3 h-3 rounded-full bg-brand-blue flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
+                <span className="text-base sm:text-lg font-extrabold text-brand-ink tracking-tight group-hover:text-brand-blue transition-colors duration-300" data-testid={`text-curriculum-name-${index}`}>
                   {option.name}
                 </span>
                 <span className="text-sm text-brand-muted" data-testid={`text-curriculum-subtitle-${index}`}>
