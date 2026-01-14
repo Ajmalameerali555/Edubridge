@@ -9,30 +9,12 @@ export function FinalCTA() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-24 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 bg-brand-bg relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, -12, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 -right-40 w-[400px] h-[400px] rounded-full bg-brand-blue/[0.04] blur-3xl"
-        />
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, 12, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-0 -left-40 w-[500px] h-[500px] rounded-full bg-brand-mint/[0.04] blur-3xl"
-        />
-        <motion.div
-          animate={prefersReducedMotion ? {} : { scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-brand-blue/[0.02] via-brand-mint/[0.02] to-brand-pink/[0.02] blur-3xl"
-        />
-      </div>
-
+    <section ref={ref} className="py-24 sm:py-32 lg:py-40 px-4 sm:px-6 lg:px-8 bg-white">
       <motion.div
-        initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 28 }}
+        initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
-        className="relative max-w-3xl mx-auto text-center"
+        className="max-w-3xl mx-auto text-center"
       >
         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-brand-ink tracking-tight leading-tight mb-5 sm:mb-6" data-testid="text-cta-headline">
           READY TO GET STARTED?
@@ -43,7 +25,7 @@ export function FinalCTA() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full bg-brand-blue text-white font-bold text-base sm:text-lg shadow-xl shadow-brand-blue/25 transition-all hover:shadow-2xl hover:shadow-brand-blue/35"
+          className="w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full bg-brand-blue text-white font-bold text-base sm:text-lg shadow-lg shadow-brand-blue/20 transition-all hover:shadow-xl hover:shadow-brand-blue/25"
           data-testid="button-final-cta"
         >
           GET YOUR FREE LEARNING SNAPSHOT

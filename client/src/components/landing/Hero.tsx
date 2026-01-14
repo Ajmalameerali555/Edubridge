@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import heroImage from "@assets/hero-video-frame.webp";
+import heroVideo from "@assets/gemini_generated_video_1E4A2E5D_1768386171250.mp4";
 
 export function Hero() {
   const prefersReducedMotion = useReducedMotion();
@@ -18,11 +17,10 @@ export function Hero() {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" },
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 24 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration: prefersReducedMotion ? 0.2 : 0.5, ease: "easeOut" },
     },
   };
@@ -30,21 +28,8 @@ export function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, -15, 0], scale: [1, 1.03, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 -left-32 w-[400px] h-[400px] rounded-full bg-brand-blue/[0.04] blur-3xl"
-        />
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, 18, 0], scale: [1, 1.06, 1] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-          className="absolute bottom-20 -right-32 w-[350px] h-[350px] rounded-full bg-brand-mint/[0.04] blur-3xl"
-        />
-        <motion.div
-          animate={prefersReducedMotion ? {} : { y: [0, 10, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute top-1/2 right-1/4 w-[200px] h-[200px] rounded-full bg-brand-yellow/[0.03] blur-3xl"
-        />
+        <div className="absolute top-20 -left-32 w-[400px] h-[400px] rounded-full bg-brand-blue/[0.03] blur-3xl" />
+        <div className="absolute bottom-20 -right-32 w-[350px] h-[350px] rounded-full bg-brand-mint/[0.03] blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto w-full">
@@ -91,7 +76,7 @@ export function Hero() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full bg-brand-blue text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-blue/25 transition-all hover:shadow-xl hover:shadow-brand-blue/30"
+                className="w-full sm:w-auto px-8 sm:px-10 py-4 rounded-full bg-brand-blue text-white font-bold text-sm sm:text-base shadow-lg shadow-brand-blue/20 transition-all hover:shadow-xl hover:shadow-brand-blue/25"
                 data-testid="button-hero-cta"
               >
                 GET YOUR FREE LEARNING SNAPSHOT
@@ -109,26 +94,17 @@ export function Hero() {
               variants={itemVariants}
               className="relative aspect-video w-full max-w-lg mx-auto lg:max-w-none"
             >
-              <div className="absolute -inset-4 bg-gradient-to-br from-brand-blue/10 via-brand-mint/10 to-brand-pink/10 rounded-[36px] blur-xl -z-10" />
-              <div className="relative rounded-[28px] overflow-hidden shadow-2xl shadow-brand-ink/[0.12]">
-                <img 
-                  src={heroImage} 
-                  alt="Online tutoring session"
+              <div className="relative rounded-[24px] overflow-hidden shadow-2xl shadow-brand-ink/[0.08]">
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
                   className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/30 via-transparent to-transparent" />
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute inset-0 flex items-center justify-center"
+                  data-testid="video-hero"
                 >
-                  <div 
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center cursor-pointer shadow-2xl"
-                    data-testid="button-play-video"
-                  >
-                    <Play className="w-6 h-6 sm:w-8 sm:h-8 text-brand-blue ml-1" fill="currentColor" strokeWidth={0} />
-                  </div>
-                </motion.div>
+                  <source src={heroVideo} type="video/mp4" />
+                </video>
               </div>
             </motion.div>
           </motion.div>
