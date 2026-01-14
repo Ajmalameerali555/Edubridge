@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const curriculumOptions = [
   { name: "CBSE", subtitle: "(Indian Curriculum)" },
@@ -15,39 +15,11 @@ export function Curriculum() {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <svg className="absolute top-0 left-0 w-full h-16 text-brand-blue/[0.03]" preserveAspectRatio="none" viewBox="0 0 1200 100">
-          <path d="M0,50 Q300,0 600,50 T1200,50 L1200,100 L0,100 Z" fill="currentColor" />
-        </svg>
-        <svg className="absolute bottom-0 left-0 w-full h-16 text-brand-mint/[0.03]" preserveAspectRatio="none" viewBox="0 0 1200 100">
-          <path d="M0,50 Q300,100 600,50 T1200,50 L1200,0 L0,0 Z" fill="currentColor" />
-        </svg>
-        
+    <section ref={ref} className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-brand-card/50">
+      <div className="max-w-3xl mx-auto">
         <motion.div
-          animate={prefersReducedMotion ? {} : { x: [0, 15, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-[10%]"
-        >
-          <svg className="w-12 h-12 text-brand-yellow/15" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
-            <circle cx="50" cy="50" r="35" />
-          </svg>
-        </motion.div>
-
-        <svg className="absolute bottom-1/3 left-[5%] w-20 h-20 text-brand-pink/10" viewBox="0 0 100 100" fill="currentColor">
-          <circle cx="20" cy="20" r="3" />
-          <circle cx="50" cy="20" r="3" />
-          <circle cx="80" cy="20" r="3" />
-          <circle cx="20" cy="50" r="3" />
-          <circle cx="50" cy="50" r="3" />
-          <circle cx="80" cy="50" r="3" />
-        </svg>
-      </div>
-
-      <div className="max-w-3xl mx-auto relative">
-        <motion.div
-          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
-          animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: prefersReducedMotion ? 0.2 : 0.5 }}
           className="text-center mb-12 sm:mb-16"
         >
@@ -60,8 +32,8 @@ export function Curriculum() {
           {curriculumOptions.map((option, index) => (
             <motion.div
               key={option.name}
-              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -24, filter: prefersReducedMotion ? "blur(0px)" : "blur(6px)" }}
-              animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
+              initial={{ opacity: 0, x: prefersReducedMotion ? 0 : -24 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: prefersReducedMotion ? 0.2 : 0.45, delay: prefersReducedMotion ? 0 : index * 0.1 }}
               className="group bg-white rounded-full px-6 sm:px-8 py-5 sm:py-6 border border-[rgba(15,23,42,0.05)] shadow-sm hover:shadow-md hover:border-brand-blue/20 transition-all duration-300 flex items-center gap-4 sm:gap-5 cursor-pointer"
               data-testid={`curriculum-${option.name.toLowerCase().replace(/[:\s]+/g, "-")}`}
