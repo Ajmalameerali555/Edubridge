@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Download, Check, Loader2, FileText, Phone, Mail, User } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Download, Check, Loader2, FileText, Phone, Mail, User, Lock } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 
 interface AssessmentModalProps {
   isOpen: boolean;
@@ -70,6 +72,7 @@ const motivations = [
 ];
 
 export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
+  const [, setLocation] = useLocation();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showReport, setShowReport] = useState(false);
@@ -94,6 +97,9 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
     additionalNotes: "",
   });
 
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [apiError, setApiError] = useState("");
   const [errors, setErrors] = useState<Partial<ContactInfo>>({});
 
   const totalSteps = 7;
@@ -113,9 +119,21 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validatePassword = () => {
+    if (!password || password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
   const handleNext = () => {
     if (step === 1) {
       if (!validateContact()) return;
+    }
+    if (step === 7) {
+      if (!validatePassword()) return;
     }
     if (step < totalSteps) {
       setStep(step + 1);
@@ -128,17 +146,42 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    setApiError("");
+    
+    try {
+      const registrationData = {
+        email: contactInfo.email,
+        password: password,
+        parentName: contactInfo.parentName,
+        studentName: contactInfo.studentName,
+        mobile: contactInfo.mobile,
+        grade: contactInfo.grade,
+        assessment: {
+          learningStyle: answers.learningStyle,
+          academicFocus: answers.academicChallenge,
+          studyHabits: answers.studyTime,
+          focusAttention: answers.focusLevel,
+          motivation: answers.motivation,
+          additionalNotes: answers.additionalNotes,
+        },
+      };
+
+      await apiRequest("POST", "/api/auth/register", registrationData);
       setIsLoading(false);
       setShowReport(true);
-    }, 3000);
+    } catch (error: any) {
+      setIsLoading(false);
+      const errorMessage = error?.message || "Registration failed. Please try again.";
+      setApiError(errorMessage);
+    }
   };
 
   const handleVerifyAndSubmit = () => {
     setShowReport(false);
-    setShowThankYou(true);
+    handleClose();
+    setLocation("/dashboard");
   };
 
   const handleClose = () => {
@@ -148,6 +191,9 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
     setIsLoading(false);
     setContactInfo({ parentName: "", studentName: "", mobile: "", email: "", grade: "" });
     setAnswers({ learningStyle: "", academicChallenge: "", studyTime: "", focusLevel: "", motivation: "", additionalNotes: "" });
+    setPassword("");
+    setPasswordError("");
+    setApiError("");
     setErrors({});
     onClose();
   };
@@ -720,15 +766,44 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <h2 className="text-2xl font-black text-brand-ink mb-2">Additional Notes</h2>
-                    <p className="text-brand-muted mb-6">Is there anything else you'd like us to know about {contactInfo.studentName || "your child"}? (Optional)</p>
-                    <textarea
-                      value={answers.additionalNotes}
-                      onChange={(e) => setAnswers({ ...answers, additionalNotes: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue focus:outline-none transition-colors min-h-[150px] resize-none"
-                      placeholder="Any specific concerns, learning goals, or important information about your child..."
-                      data-testid="input-additional-notes"
-                    />
+                    <h2 className="text-2xl font-black text-brand-ink mb-2">Final Step</h2>
+                    <p className="text-brand-muted mb-6">Create your account password and add any additional notes about {contactInfo.studentName || "your child"}.</p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-brand-ink mb-2">
+                          <Lock className="w-4 h-4 inline mr-2" />
+                          Create Password *
+                        </label>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className={`w-full px-4 py-3 rounded-xl border-2 ${passwordError ? "border-red-400 bg-red-50" : "border-gray-200"} focus:border-brand-blue focus:outline-none transition-colors`}
+                          placeholder="Minimum 6 characters"
+                          data-testid="input-password"
+                        />
+                        {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+                        <p className="text-xs text-brand-muted mt-1">This will be your login password</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-brand-ink mb-2">Additional Notes (Optional)</label>
+                        <textarea
+                          value={answers.additionalNotes}
+                          onChange={(e) => setAnswers({ ...answers, additionalNotes: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-blue focus:outline-none transition-colors min-h-[120px] resize-none"
+                          placeholder="Any specific concerns, learning goals, or important information about your child..."
+                          data-testid="input-additional-notes"
+                        />
+                      </div>
+
+                      {apiError && (
+                        <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                          <p className="text-red-600 text-sm font-medium">{apiError}</p>
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

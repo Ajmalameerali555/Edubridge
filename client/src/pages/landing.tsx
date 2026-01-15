@@ -10,16 +10,20 @@ import { Promise } from "../components/landing/Promise";
 import { FinalCTA } from "../components/landing/FinalCTA";
 import { Footer } from "../components/landing/Footer";
 import { AssessmentModal } from "../components/landing/AssessmentModal";
+import { LoginModal } from "../components/landing/LoginModal";
 
 export default function Landing() {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const openAssessment = () => setIsAssessmentOpen(true);
   const closeAssessment = () => setIsAssessmentOpen(false);
+  const openLogin = () => setIsLoginOpen(true);
+  const closeLogin = () => setIsLoginOpen(false);
 
   return (
     <div className="min-h-screen bg-brand-bg">
-      <Navbar onOpenAssessment={openAssessment} />
+      <Navbar onOpenAssessment={openAssessment} onOpenLogin={openLogin} />
       <main>
         <Hero onOpenAssessment={openAssessment} />
         <WhyChoose />
@@ -32,6 +36,7 @@ export default function Landing() {
       </main>
       <Footer />
       <AssessmentModal isOpen={isAssessmentOpen} onClose={closeAssessment} />
+      <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
     </div>
   );
 }

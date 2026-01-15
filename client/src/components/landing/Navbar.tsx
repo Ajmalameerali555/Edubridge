@@ -5,9 +5,10 @@ import { DrawerMenu } from "./DrawerMenu";
 
 interface NavbarProps {
   onOpenAssessment: () => void;
+  onOpenLogin: () => void;
 }
 
-export function Navbar({ onOpenAssessment }: NavbarProps) {
+export function Navbar({ onOpenAssessment, onOpenLogin }: NavbarProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
@@ -39,15 +40,26 @@ export function Navbar({ onOpenAssessment }: NavbarProps) {
                 </span>
               </div>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onOpenAssessment}
-              className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-brand-blue text-white font-semibold text-sm sm:text-base shadow-lg shadow-brand-blue/25 transition-shadow hover:shadow-xl hover:shadow-brand-blue/30"
-              data-testid="button-get-started-nav"
-            >
-              GET STARTED
-            </motion.button>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenLogin}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white border-2 border-brand-blue text-brand-blue font-semibold text-sm sm:text-base hover:bg-brand-blue/5 transition-colors"
+                data-testid="button-login-nav"
+              >
+                LOG IN
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onOpenAssessment}
+                className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-full bg-brand-blue text-white font-semibold text-sm sm:text-base shadow-lg shadow-brand-blue/25 transition-shadow hover:shadow-xl hover:shadow-brand-blue/30"
+                data-testid="button-get-started-nav"
+              >
+                GET STARTED
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.nav>
