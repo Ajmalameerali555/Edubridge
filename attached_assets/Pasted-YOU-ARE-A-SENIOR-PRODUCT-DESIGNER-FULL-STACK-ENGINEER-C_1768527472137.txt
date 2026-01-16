@@ -1,0 +1,394 @@
+YOU ARE A SENIOR PRODUCT DESIGNER + FULL-STACK ENGINEER. CONTINUE THE EXISTING EDUbridge REPLIT PROJECT EXACTLY FROM CURRENT STATE (DO NOT RESTART, DO NOT CHANGE BRAND COLORS/TYPOGRAPHY/HEADER STYLE). UPGRADE UI SPACING + BUILD 3 ROLE PORTALS WITH COMPLETE END-TO-END WIRING.
+
+=====================================================
+0) NON-NEGOTIABLE OUTCOME
+=====================================================
+Deliver a working portal system with:
+- Students → /dashboard (enhanced)
+- Tutors → /tutor (new)
+- Admins → /admin (new)
+
+Everything must be wired end-to-end using a local JSON datastore (localStorage). No placeholder buttons. All routes work. All actions persist and reflect across portals instantly. Premium UI spacing/padding aligned everywhere. Add a reusable “Details Drawer” used across portals.
+
+=====================================================
+1) ROLE-BASED AUTH + ROUTING
+=====================================================
+Use/extend existing auth. Add role support.
+
+Roles: student | tutor | admin | parent
+
+Rules:
+- After login, redirect based on role:
+  student → /dashboard
+  tutor   → /tutor
+  admin   → /admin
+  parent  → /parent (minimal; see section 7)
+- Protect routes:
+  /dashboard* only student
+  /tutor*     only tutor
+  /admin*     only admin
+  /parent*    only parent/admin
+- Add a single "RouteGuard" middleware/helper used by all pages.
+
+Accounts:
+- Signup flow must create user with role.
+- Password stored as simple hashed string (good enough for MVP local demo).
+
+=====================================================
+2) DESIGN SYSTEM UPGRADE (PREMIUM, MINIMAL)
+=====================================================
+Apply a consistent design system across ALL pages. Refactor existing UI to match.
+
+Tokens:
+- max container: 1120px
+- base radius: 14px, card radius: 18px
+- button/input height: 44px
+- spacing scale: 6 / 10 / 14 / 18 / 24 / 32
+- shadows: subtle card, medium drawer, strong modal
+- keep EduBridge blue; keep current theme
+
+Components (create reusable UI components folder):
+- Button: primary/secondary/ghost/destructive + loading/disabled states
+- Input (with label + hint + error)
+- Select dropdown (clean)
+- Badge / StatusChip
+- Card (header/body/footer variants)
+- Tabs
+- Table/List rows with hover + row actions
+- Modal
+- Toast notifications
+- Drawer (right slide-over) [KEY COMPONENT]
+  - overlay
+  - ESC close
+  - close button
+  - responsive: desktop 520–640px width, mobile full screen
+  - supports “action footer” area
+
+Global UX rules:
+- No page shows more than 6 content blocks at once.
+- Every list has search + filters + status badges.
+- Use right “Details Drawer” instead of navigating away for most row details.
+
+=====================================================
+3) LOCAL DATASTORE (SINGLE SOURCE OF TRUTH)
+=====================================================
+Implement datastore module:
+- getDB(), setDB(), seedDB() if empty
+- use a single localStorage key: "edubridge_db_v1"
+- all pages read/write through datastore functions only.
+
+Entities (must exist):
+users: { id, role, firstName, lastName?, email, mobile, passwordHash, isActive, createdAt }
+students: { id, userId, parentId?, grade, subjects[], track, blockers[], signals:{confidence,memory,language,foundation}, createdAt }
+tutors: { id, userId, subjects[], gradesSupported[], languages[], availability[], rating, isActive, createdAt }
+questionnaires: { id, parentId, studentTemp:{firstName?,grade,subjects[]}, answers:{...}, derived:{track,blockers,signals}, status: new|reviewed|assigned|scheduled|active, createdAt }
+sessions: { id, studentId, tutorId, subject, startAt, durationMin, meetLink, status: upcoming|live|done|missed, createdAt }
+notes: { id, sessionId, tutorId, studentId, coveredTopic, studentResponse(1-5), issues[], nextFocus, homeworkId?, privateNote, createdAt }
+homework: { id, studentId, tutorId, subject, title, items[], dueAt, status: assigned|submitted|reviewed, createdAt }
+messages: { id, threadId, studentId, fromUserId, toUserId, body, createdAt, read }
+incidents: { id, type: contact_share_attempt|external_link_attempt|policy_violation, severity: low|medium|high, actorUserId, studentId, tutorId, messageSnippet, createdAt }
+notifications: { id, forRole: admin, type: session_live|policy_block|incident_logged|questionnaire_new, payload, createdAt, read }
+
+Seed data:
+- 1 admin
+- 2 tutors
+- 2 parents
+- 2 students
+- some sessions/homework/notes/messages for demo
+
+=====================================================
+4) GLOBAL PORTAL SHELL (ALL ROLES)
+=====================================================
+Create a shared portal layout:
+- Sidebar (collapsible) + Topbar (search optional + notifications + profile)
+- Responsive: sidebar collapses to icon bar on small screens
+- Profile menu: logout + role label
+
+Sidebar items per role:
+
+STUDENT:
+- Home (/dashboard)
+- Sprint (/dashboard/sprint)
+- Sessions (/dashboard/sessions)
+- Homework (/dashboard/homework)
+- Reports (/dashboard/reports)
+- Messages (/dashboard/messages)
+
+TUTOR:
+- Today (/tutor)
+- My Students (/tutor/students)
+- Sessions (/tutor/sessions)
+- Homework (/tutor/homework)
+- Messages (/tutor/messages)
+
+ADMIN:
+- Command Center (/admin)
+- Inbox (Questionnaires) (/admin/inbox)
+- Students (/admin/students)
+- Tutors (/admin/tutors)
+- Matching (/admin/matching)
+- Sessions (/admin/sessions)
+- Incidents (/admin/incidents)
+- Notifications (/admin/notifications)
+- Settings (/admin/settings)
+
+PARENT (minimal):
+- Home (/parent)
+- My Child (/parent/child)
+- Sessions (/parent/sessions)
+- Reports (/parent/reports)
+- Messages (/parent/messages)
+
+=====================================================
+5) KEY SHARED FEATURE: DETAILS DRAWER
+=====================================================
+Implement a reusable Drawer used across all portals:
+- opens from right
+- can render “Details” view of any list row
+- supports action buttons inside drawer (e.g., Assign Tutor, Schedule Session, Add Note)
+- consistent spacing + typography
+
+Use drawer for:
+Student: snapshot details, session details, homework details
+Tutor: session details + “Add Note”, student snapshot
+Admin: questionnaire review, student profile, tutor profile, incident details, session live status, settings previews
+
+=====================================================
+6) STUDENT PORTAL (/dashboard) — ENHANCED + WIRED
+=====================================================
+A) Student Home (/dashboard)
+Blocks (premium minimal, but feature rich):
+1) Next Action Panel:
+   - determines primary CTA:
+     - if session within 60 mins → Join Session
+     - else if homework due soon → Start Homework
+     - else → Start Sprint
+   - shows subject, tutor name, countdown chip
+2) Snapshot Strip:
+   - 4 signal bars (confidence/memory/language/foundation)
+   - track badge + blockers chips
+   - View Details → Drawer explaining why track chosen + how we’ll teach
+3) Today Board (max 3 items):
+   - Continue sprint / next step
+   - next homework
+   - latest tutor note
+4) Timeline (next 3 events)
+
+B) Sprint (/dashboard/sprint)
+- 3-step micro flow (warm-up/core/check)
+- timer per step
+- questions stored in local seed; record completion
+- on completion: update signals + create a “progress event” shown on dashboard
+
+C) Sessions (/dashboard/sessions)
+- upcoming/past list
+- Join session opens meetLink new tab
+- clicking a session row opens drawer showing details + last note
+
+D) Homework (/dashboard/homework)
+- list with status chips
+- open homework page or drawer; allow “mark submitted”
+- tutor/admin can review later
+
+E) Messages (/dashboard/messages)
+- in-app messaging only (guardrails apply; see section 9)
+- no contact info shown ever
+
+=====================================================
+7) PARENT FLOW (SIGNUP → QUESTIONNAIRE → ADMIN INBOX)
+=====================================================
+Parent signup/login is mandatory before questionnaire submission.
+
+Flow:
+1) Parent signup/login (role parent)
+2) Child basics: grade, subjects, child first name (optional)
+3) 2–4 minute questionnaire (mostly dropdowns)
+4) On submit:
+   - create questionnaires record with status “new”
+   - compute derived track/blockers/signals using decoder rules (default rules)
+   - create admin notification: type questionnaire_new
+   - show thank-you screen
+   - parent portal shows “Under Review” until admin approves/assigns
+
+Parent portal (/parent):
+- shows child profile summary + status
+- once active: shows scheduled sessions, reports, messages (in-app only)
+
+=====================================================
+8) TUTOR PORTAL (/tutor) — PRODUCTIVITY COCKPIT + WIRED
+=====================================================
+A) Tutor Today (/tutor)
+- Today’s Sessions list (timeline style)
+- Each session row: Join + Details
+- Students Needing Attention (auto):
+  - low signals, missed sessions, repeated low responses
+- Quick Actions:
+  - create homework template, message, view students
+
+B) My Students (/tutor/students)
+- list with search/filter chips (grade/subject/track)
+- clicking student opens profile page with tabs + drawer for snapshot
+
+C) Student Profile (/tutor/students/:id)
+Tabs:
+- Snapshot (track + blockers + signals + “teaching rules”)
+- Sessions (list)
+- Homework (list)
+- Messages (thread)
+- Progress (simple trend)
+
+D) Post-session Note (must be fast; works end-to-end)
+From session drawer or session page:
+- coveredTopic (dropdown)
+- studentResponse (1–5)
+- issues chips (memory/language/confidence/foundation)
+- nextFocus (dropdown)
+- assign homework toggle (template)
+On save:
+- creates notes
+- updates student signals
+- updates student dashboard “Tutor Note”
+- updates admin notification if issues severe
+
+=====================================================
+9) ADMIN PORTAL (/admin) — FULL CONTROL CENTER
+=====================================================
+ADMIN MUST CONTROL EVERYTHING + SAFETY
+
+A) Command Center (/admin)
+- KPI row: active students, sessions today, pending questionnaires, risk alerts
+- Queues:
+  - New questionnaire submissions
+  - Unmatched students
+  - Risk alerts (missed sessions, low signals)
+- Each row opens drawer with actions
+
+B) Questionnaire Inbox (/admin/inbox)
+Pipeline status: new → reviewed → assigned → scheduled → active
+Admin can:
+- open submission drawer
+- approve/adjust derived track & blockers
+- assign tutor (recommended top 3)
+- schedule first session
+- activate student
+- request follow-up from parent (sends in-app message)
+
+C) Matching Engine (/admin/matching)
+- student selector + suggested tutors with reason chips:
+  grade match, subject match, language match, track fit, availability
+- assign tutor → schedule modal → writes sessions
+
+D) Students (/admin/students)
+- full list + filters + status
+- student drawer includes: snapshot, signals editor, tutor assignment, session history, messages, incidents
+- admin can force re-assessment (creates new questionnaire)
+
+E) Tutors (/admin/tutors)
+- approve/disable tutor accounts
+- set subjects/grades/languages/availability
+- view performance metrics (attendance, student improvement deltas)
+- suspend if policy violations
+
+F) Sessions (/admin/sessions)
+- list with status: upcoming/live/done/missed
+- admin can edit meetLink ONLY (tutor cannot after approval)
+- open drawer for live monitoring data (MVP)
+
+G) Settings (/admin/settings) [MANDATORY]
+Tabs:
+1) Decoder Rules:
+   - editable mapping from questionnaire answers → track/blockers/signals
+2) Communication Controls:
+   - mask phone/email (default ON)
+   - block phone/email sharing (default ON)
+   - block external links (default ON)
+   - keyword list (WhatsApp/call me/etc)
+3) Session/Video Policies:
+   - meeting link locked after schedule
+   - admin notification level
+4) Templates:
+   - homework templates
+   - report templates
+   - tutor note templates
+5) Branding:
+   - app name, support email, footer text, accent tweaks (config)
+
+=====================================================
+10) ANTI-BYPASS SAFETY (STOP PEOPLE SHARING NUMBERS)
+=====================================================
+This is critical and must be enforced across tutor/parent/student messaging AND within session UI reminders.
+
+A) Masked Contact Data:
+- Never display phone/email between tutor and parent/student anywhere.
+- Show only first name + internal ID.
+
+B) Messaging Guardrails (hard block):
+Detect and BLOCK:
+- phone numbers (7+ digits, +country codes)
+- emails
+- keywords: whatsapp, call me, telegram, dm, number, mobile, contact, etc.
+- external links (http/https) unless admin whitelist allows
+
+On block:
+- show user warning toast
+- do not send message
+- log incident (incidents)
+- notify admin (notifications type policy_block + incident_logged)
+
+C) Incidents Center (/admin/incidents)
+- filter by severity/type
+- open incident drawer with context
+- admin actions: warn user (message), suspend user, add internal note
+
+D) Session Start + Monitoring (MVP):
+When tutor clicks “Join” for a scheduled session:
+- set session.status = live
+- create admin notification: session_live
+- show in-call banner reminder every 10 minutes:
+  “Sharing personal contact details is not allowed.”
+
+Admin “Observe” (lite):
+- in session drawer show: live status, participants, timer, recent messages/incidents
+- no real video stream required (MVP)
+
+=====================================================
+11) NOTIFICATIONS SYSTEM (ADMIN)
+=====================================================
+- topbar bell with badge
+- /admin/notifications list
+- clicking a notification opens drawer with actions
+
+Notify admin on:
+- new questionnaire submission
+- session goes live
+- policy blocks + incidents
+- repeated low studentResponse (configurable threshold)
+
+=====================================================
+12) QUALITY BAR / ACCEPTANCE TESTS
+=====================================================
+Must pass:
+- All routes load without errors
+- Role guards work (cannot open other portals)
+- Drawer works everywhere (ESC/overlay/close)
+- Admin can: review questionnaire → assign tutor → schedule session → student sees it → tutor sees it → join session sets live → admin notified
+- Messaging blocks phone/email/link attempts and logs incidents
+- No phone/email ever exposed in UI between parties
+- UI spacing/padding is consistent and premium across pages
+- No dead buttons; every CTA triggers real state change
+
+=====================================================
+13) IMPLEMENTATION ORDER (DO THIS)
+=====================================================
+1) Scan current repo structure; identify router (Next/React/Vite/etc)
+2) Implement datastore + seed
+3) Implement RoleAuth + RouteGuard + redirects
+4) Implement shared portal shell + drawer + UI components
+5) Build Admin portal first (inbox/matching/settings) because it drives system
+6) Build Tutor portal (today → notes → messages)
+7) Enhance Student dashboard + sprint
+8) Parent questionnaire flow → admin inbox
+9) Add safety guardrails + incidents + notifications
+10) Polish spacing and states (hover/focus/loading/empty states)
+
+Start now by reading the current code and integrating without breaking existing homepage.

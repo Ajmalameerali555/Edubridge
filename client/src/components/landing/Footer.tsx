@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 
 export function Footer() {
   return (
@@ -35,6 +36,9 @@ export function Footer() {
             <a href="#" className="hover:text-white transition-colors duration-300" data-testid="link-footer-help">
               HELP CENTER
             </a>
+            <Link href="/staff-login" className="hover:text-white transition-colors duration-300" data-testid="link-footer-staff-login">
+              STAFF LOGIN
+            </Link>
           </div>
         </motion.div>
 
