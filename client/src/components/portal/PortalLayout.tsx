@@ -33,6 +33,7 @@ import {
   Shield,
   User,
   GraduationCap,
+  Briefcase,
 } from "lucide-react";
 
 interface NavItem {
@@ -64,6 +65,7 @@ const adminNavItems: NavItem[] = [
   { label: "Inbox", path: "/admin/inbox", icon: Inbox },
   { label: "Students", path: "/admin/students", icon: GraduationCap },
   { label: "Tutors", path: "/admin/tutors", icon: UserCheck },
+  { label: "Hiring", path: "/admin/hiring", icon: Briefcase },
   { label: "Matching", path: "/admin/matching", icon: Users },
   { label: "Sessions", path: "/admin/sessions", icon: Calendar },
   { label: "Incidents", path: "/admin/incidents", icon: AlertTriangle },

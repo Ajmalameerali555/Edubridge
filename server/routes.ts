@@ -8,6 +8,7 @@ import { pool } from "./db";
 import { insertUserSchema, insertAssessmentSchema } from "@shared/schema";
 import { z } from "zod";
 import { registerAIChatRoutes } from "./ai-chat";
+import { registerAudioRoutes } from "./replit_integrations/audio";
 import { evaluateTutorApplication } from "./ai-analyzer";
 import { checkPolicy } from "./policy-engine";
 import { db } from "./db";
@@ -181,6 +182,7 @@ export async function registerRoutes(
   });
 
   registerAIChatRoutes(app);
+  registerAudioRoutes(app);
 
   app.post("/api/tutor-applications", async (req: Request, res: Response) => {
     try {
@@ -363,6 +365,46 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Policy check error:", error);
       res.status(500).json({ message: "Failed to check policy" });
+    }
+  });
+
+  app.get("/api/tutor-applications", async (req: Request, res: Response) => {
+    try {
+      const applications = await db.select().from(tutorApplications);
+      res.json({ applications });
+    } catch (error) {
+      console.error("Get all applications error:", error);
+      res.status(500).json({ message: "Failed to get applications" });
+    }
+  });
+
+  app.post("/api/tutor-applications/:id/status", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status, adminNotes } = req.body;
+
+      if (!status || !["pending", "approved", "rejected", "submitted", "held_by_ai"].includes(status)) {
+        return res.status(400).json({ message: "Valid status required (pending, approved, rejected)" });
+      }
+
+      const [updated] = await db.update(tutorApplications)
+        .set({
+          status,
+          adminNotes: adminNotes || null,
+          reviewedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(tutorApplications.id, parseInt(id)))
+        .returning();
+
+      if (!updated) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      res.json({ application: updated, message: `Application ${status} successfully` });
+    } catch (error) {
+      console.error("Update application status error:", error);
+      res.status(500).json({ message: "Failed to update application status" });
     }
   });
 

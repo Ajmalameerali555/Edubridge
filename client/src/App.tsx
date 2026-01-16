@@ -17,6 +17,7 @@ import AdminSessions from "@/pages/admin/sessions";
 import AdminIncidents from "@/pages/admin/incidents";
 import AdminNotifications from "@/pages/admin/notifications";
 import AdminSettings from "@/pages/admin/settings";
+import AdminHiring from "@/pages/admin/hiring";
 
 import TutorPortal from "@/pages/tutor/index";
 import TutorStudents from "@/pages/tutor/students";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/admin/incidents" component={AdminIncidents} />
       <Route path="/admin/notifications" component={AdminNotifications} />
       <Route path="/admin/settings" component={AdminSettings} />
+      <Route path="/admin/hiring" component={AdminHiring} />
 
       <Route path="/tutor" component={TutorPortal} />
       <Route path="/tutor/students" component={TutorStudents} />

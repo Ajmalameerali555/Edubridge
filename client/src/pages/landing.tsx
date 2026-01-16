@@ -11,6 +11,7 @@ import { FinalCTA } from "../components/landing/FinalCTA";
 import { Footer } from "../components/landing/Footer";
 import { AssessmentModal } from "../components/landing/AssessmentModal";
 import { LoginModal } from "../components/landing/LoginModal";
+import { AIConcierge } from "../components/landing/AIConcierge";
 
 export default function Landing() {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
@@ -37,6 +38,7 @@ export default function Landing() {
       <Footer />
       <AssessmentModal isOpen={isAssessmentOpen} onClose={closeAssessment} />
       <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
+      <AIConcierge />
     </div>
   );
 }
