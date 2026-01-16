@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { RouteGuard } from "@/components/portal/RouteGuard";
 import { useAuth } from "@/contexts/AuthContext";
+import { AIAssistant } from "@/components/portal/AIAssistant";
 import {
   getAllStudents,
   getQuestionnairesByParentId,
@@ -408,6 +409,7 @@ export default function ParentPortal() {
             </Card>
           )}
         </div>
+        <AIAssistant role="parent" context={{ parentName: user?.firstName }} />
       </PortalLayout>
     </RouteGuard>
   );

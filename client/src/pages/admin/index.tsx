@@ -1,6 +1,7 @@
 import * as React from "react";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { RouteGuard } from "@/components/portal/RouteGuard";
+import { AIAssistant } from "@/components/portal/AIAssistant";
 import { SideDrawer } from "@/components/portal/SideDrawer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -362,6 +363,7 @@ export default function AdminPortal() {
         >
           {renderDrawerContent()}
         </SideDrawer>
+        <AIAssistant role="admin" />
       </PortalLayout>
     </RouteGuard>
   );

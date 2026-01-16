@@ -7,6 +7,7 @@ import pgSession from "connect-pg-simple";
 import { pool } from "./db";
 import { insertUserSchema, insertAssessmentSchema } from "@shared/schema";
 import { z } from "zod";
+import { registerAIChatRoutes } from "./ai-chat";
 
 declare module "express-session" {
   interface SessionData {
@@ -173,6 +174,8 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to get assessments" });
     }
   });
+
+  registerAIChatRoutes(app);
 
   return httpServer;
 }
