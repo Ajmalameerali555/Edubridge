@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Landing from "@/pages/landing";
-import Dashboard from "@/pages/dashboard";
 import StaffLogin from "@/pages/staff-login";
 import NotFound from "@/pages/not-found";
 
@@ -44,7 +43,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/staff-login" component={StaffLogin} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard" component={StudentDashboard} />
       
       <Route path="/admin" component={AdminPortal} />
       <Route path="/admin/inbox" component={AdminInbox} />

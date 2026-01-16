@@ -19,9 +19,7 @@ export default function StaffLogin() {
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.role === "admin" || user.role === "tutor") {
-        setLocation(getRedirectPath(user.role));
-      }
+      setLocation(getRedirectPath(user.role));
     }
   }, [isAuthenticated, user, setLocation]);
 
