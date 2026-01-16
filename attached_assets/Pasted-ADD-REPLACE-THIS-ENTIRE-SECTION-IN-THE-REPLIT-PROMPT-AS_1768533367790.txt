@@ -1,0 +1,222 @@
+ADD / REPLACE THIS ENTIRE SECTION IN THE REPLIT PROMPT AS:
+“PORTAL AI + HOMEPAGE SUPPORT AI (PET-LIKE PROFESSIONAL) + POLICY ENFORCEMENT”
+
+=====================================================
+14) EDUbridge AI SYSTEM (EVERYWHERE) — PET-LIKE, FORMAL, HUMAN
+=====================================================
+Implement ONE unified AI system across:
+- Public website (homepage support) → / (or existing home)
+- Student portal → /dashboard (AI Coach)
+- Tutor portal → /tutor (AI Co-Pilot)
+- Admin portal → /admin (AI Ops Analyst)
+- Parent portal → /parent (AI Parent Guide)
+
+The AI must feel “alive” like a companion/pet presence (warm + attentive), BUT ALWAYS:
+- formal-professional tone
+- friendly
+- calm, supportive, structured
+- never slangy / never childish humor
+- never rude
+- never allows policy violations
+
+UI:
+- Floating AI button (bottom-right) on ALL pages (including homepage)
+- Opens the same right-side Drawer chat panel (reusable component)
+- Shows “presence” cues:
+  - subtle idle animation (breathing dot)
+  - typing indicator
+  - quick suggestion chips
+  - “Summarize” and “Next Step” buttons
+- Use the same brand palette (EduBridge blue) + premium spacing.
+
+=====================================================
+15) AI SAFETY + POLICY ENGINE (CRITICAL)
+=====================================================
+Build a “PolicyEngine” used by:
+- in-app messaging
+- AI chat
+- session live UI
+- any text submission fields where contact exchange could happen
+
+BANNED behaviors (must block + log):
+A) Contact exchange:
+- phone numbers (+971 or any 7+ digit sequences)
+- emails
+- “WhatsApp”, “Telegram”, “call me”, “DM”, “my number”, “contact me”
+B) Off-platform coaching requests:
+- “meet outside”, “pay directly”, “send money”, “private tutoring outside platform”
+C) External links:
+- block http/https by default (admin can whitelist domains)
+
+On detection:
+- block send
+- show user warning toast: “For safety, sharing contact details is not allowed in EduBridge.”
+- log incident in incidents collection with severity
+- create admin notification (policy_block + incident_logged)
+- if repeated (>=2 within 7 days) auto-flag for admin review (not auto-ban unless admin sets in Settings)
+
+ADMIN-ONLY “strike policy” setting:
+- Settings tab: “Enforcement”
+  - strikesBeforeSuspend (default 3)
+  - autoSuspend (default OFF)
+  - cooldownDays (default 7)
+
+=====================================================
+16) AI PERSONALITY LAYERS (ROLE-SPECIFIC)
+=====================================================
+Define 4 “persona modes” (system prompts internally), with consistent formal warmth:
+
+1) PUBLIC SITE AI: “EduBridge Concierge”
+- Purpose: inquiries, pricing, how it works, scheduling, FAQs, onboarding help
+- Must convert leads politely + guide to sign up
+- Collect only safe info (name/email) through form suggestions; never request phone in chat
+- If user asks for off-platform → refuse and direct to platform signup
+
+2) STUDENT AI: “EduBridge Coach”
+- Purpose: encouragement + skill discovery + learning support
+- Tone: formal, warm, motivational, personal (no slang)
+- Must do:
+  - class recap (what happened last class)
+  - “where we stopped”
+  - what to do now (2 steps max)
+  - explain concepts simply
+  - quick micro-quiz (3 questions)
+  - identify strengths & hidden abilities (sports/arts/logic/communication) using signals + interests
+  - recommend habits (sleep/routine) gently, non-judgmental
+- Must never shame. Always growth mindset language.
+- Must adapt for Grade 1–10:
+  - grades 1–3: shorter sentences, more supportive cues
+  - grades 4–7: structured guidance + examples
+  - grades 8–10: more autonomy + strategy + exam skill
+
+3) TUTOR AI: “Tutor Co-Pilot”
+- Purpose: lesson planning, reminders, note drafting, student risk hints
+- Must do:
+  - “last session recap + where stopped”
+  - “next focus + suggested warmup”
+  - auto-create homework draft
+  - suggest track-specific teaching method
+- Must flag if tutor tries to move off-platform (PolicyEngine)
+
+4) ADMIN AI: “Ops Analyst”
+- Purpose: monitoring, red flags, improvements, policy issues
+- Must do:
+  - daily digest: improvements + risk students + tutor performance issues
+  - detect “policy risk patterns”
+  - recommend actions: warn/suspend/reassign/parent follow-up
+- Must raise alert if a tutor is “convincing” students/parents to leave platform or share contacts.
+  - This includes repeated blocked attempts, suspicious phrases, or incidents.
+
+5) PARENT AI: “Parent Guide”
+- Purpose: formal guidance, child progress explanation, home support routine
+- Must do:
+  - weekly summary
+  - what parent can do at home (2 small actions)
+  - next session expectation
+- Must not expose tutor private notes or internal admin flags; show parent-safe summary only
+
+=====================================================
+17) AI CONTEXT ENGINE (WHAT AI CAN SEE)
+=====================================================
+AI must be context-aware using DB:
+- sessions + status (upcoming/live/done/missed)
+- tutor notes (with visibility rules)
+- homework assignments + due dates
+- questionnaire derived track/blockers/signals
+- student interests (add a simple “interests” field captured optionally via AI)
+- incidents and policy violations (admin only)
+
+Visibility Rules:
+- Student AI: no admin-only info, no private tutor notes, no incident logs
+- Parent AI: summary only, no internal scoring details unless allowed
+- Tutor AI: assigned students only
+- Admin AI: full access
+
+=====================================================
+18) AUTO “CLASS RECAP” + “WHERE WE STOPPED”
+=====================================================
+After tutor submits session notes:
+- Generate a “Student Recap” record:
+  recap: { sessionId, studentId, summary, whatWeDid, whereWeStopped, nextFocus, homeworkReminder, createdAt }
+- Student dashboard shows this recap card
+- Parent portal shows a simplified version
+- Tutor portal uses recap to remind “where we stopped”
+
+=====================================================
+19) AI HUMAN EFFECTS (PREMIUM CHAT EXPERIENCE)
+=====================================================
+Chat UI:
+- message streaming simulation (type-by-type) even for MVP template engine
+- typing indicator
+- time stamps optional
+- suggestion chips per role
+- “Actions” inside AI response:
+  - Student: “Start Sprint”, “Open Homework”, “Quiz me”
+  - Tutor: “Draft note”, “Create homework”, “Open student”
+  - Admin: “Open risk list”, “Open incidents”, “Reassign tutor”
+  - Parent: “Open report”, “Ask tutor question (in-app)”
+
+All action buttons must actually navigate or perform an action.
+
+=====================================================
+20) LIVE SESSION SAFETY + ADMIN NOTIFICATIONS
+=====================================================
+When tutor clicks Join on a scheduled session:
+- session.status becomes “live”
+- create admin notification: session_live
+- show a safety reminder banner inside session view every 10 minutes:
+  “EduBridge policy: do not share personal contact details.”
+
+If PolicyEngine blocks any message during live:
+- create incident + admin notification instantly
+
+Admin “Observe (lite)” drawer for live sessions:
+- session duration timer
+- participants
+- last 10 chat messages (filtered)
+- incidents in this session
+- actions: warn tutor, suspend tutor (admin-only)
+
+=====================================================
+21) MVP AI ENGINE (NO EXTERNAL API REQUIRED)
+=====================================================
+Implement a deterministic “Smart Response Engine”:
+- Generate humanized replies using templates + DB context
+- Must feel natural and personal (not robotic)
+- Must not mention “I am a template”
+
+Optional upgrade:
+- If AI_API_KEY exists, plug into real LLM provider
+- Keep identical safety behavior via PolicyEngine
+- Do not break MVP if key missing
+
+=====================================================
+22) ACCEPTANCE TESTS (AI + POLICY)
+=====================================================
+- Homepage has AI Concierge working
+- Student AI can recap last class + next steps
+- Tutor AI can say where student stopped + draft homework
+- Admin AI can list improving students + red flags
+- Parent AI can give weekly summary
+- Any attempt to share phone/email/link is blocked + logged + admin notified
+- Admin can view incidents + apply action
+- No private contact data visible anywhere
+
+
+⸻
+
+IMPORTANT IMPLEMENTATION NOTES (DO THIS)
+	1.	Implement PolicyEngine first and reuse it everywhere (messaging + AI).
+	2.	Build AI Drawer as a shared component, injected into the portal layout AND homepage layout.
+	3.	Build “AI Context Builder”:
+	•	getStudentContext(studentId)
+	•	getTutorContext(tutorId)
+	•	getAdminContext()
+	4.	The AI must output short, structured replies (3 blocks max):
+	•	“What happened / status”
+	•	“What to do now”
+	•	“Next step / options”
+
+That’s the complete wiring for your AI vision.
+
+If you want one extra upgrade: I can add a “Student Strength Finder” mini-flow inside the student AI that asks 3 gentle questions, then writes “interests/strengths” into DB and updates the learning plan automatically.

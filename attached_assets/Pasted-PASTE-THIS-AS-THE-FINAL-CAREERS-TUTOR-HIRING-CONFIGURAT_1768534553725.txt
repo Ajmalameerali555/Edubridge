@@ -1,0 +1,298 @@
+PASTE THIS AS THE FINAL “CAREERS + TUTOR HIRING” CONFIGURATION/WIRING BLOCK
+(Keep the rest of the EduBridge portal prompt as-is. This is the complete, pro-grade Careers button + hiring system.)
+
+=====================================================
+24) HOMEPAGE CAREERS BUTTON + TUTOR RECRUITMENT (FULL WIRING)
+=====================================================
+
+24.1) HOMEPAGE HEADER (PUBLIC)
+- Add a top navigation link: “Careers” → /careers
+- Add a header CTA button (secondary style): “Become a Tutor” → /careers/tutors
+- Keep the existing header layout, colors, and typography.
+- On mobile: place “Careers” inside the hamburger menu; keep “Become a Tutor” as a prominent button below menu items.
+
+24.2) PUBLIC ROUTES (NEW)
+- /careers            (Careers Hub)
+- /careers/tutors     (Tutor Recruitment Landing)
+- /careers/tutors/apply   (Tutor Apply Wizard)
+- /careers/tutors/status  (Tutor Applicant Status Tracker)
+- /careers/team       (Simple form page only)
+
+24.3) CAREERS HUB PAGE (/careers)
+UI: premium, minimal, 2 primary cards only
+Card A: “Become a Tutor” → /careers/tutors
+Card B: “Join EduBridge Team” → /careers/team
+- Keep it lightweight and fast; no heavy animations; use spacing/whitespace.
+
+24.4) TUTOR RECRUITMENT LANDING (/careers/tutors)
+Conversion layout:
+1) Hero: headline + 1-liner + “Apply Now” primary button → /careers/tutors/apply
+2) 4-step process (visual stepper):
+   Apply → Skill Check → Verification → Start Teaching
+3) “Tutor Standards” chips:
+   Clarity • Patience • Reliability • Policy Compliance
+4) FAQ accordion (short)
+5) Sticky “Apply Now” CTA on mobile
+Performance:
+- Lazy-load non-critical images
+- Use compressed images and consistent card spacing.
+
+=====================================================
+25) TUTOR APPLICATION FLOW (ADVANCED + ULTRA SIMPLE)
+=====================================================
+
+25.1) ROLES + ACCESS
+- If user is not logged in, force login/signup before apply
+- Signup creates role = tutor_applicant
+- Admin approval upgrades role = tutor
+- Only role tutor_applicant can access:
+/careers/tutors/status and edit their draft
+
+25.2) DATA MODELS (LOCALSTORAGE DB)
+Add/ensure these entities exist:
+
+tutor_applications: {
+  id,
+  userId,
+  status: draft|submitted|held_by_ai|screening|approved|rejected|needs_changes,
+  qualityScore: number,            // 0–100 (AI Analyzer output)
+  dimensionScores: { clarity, structure, empathy, subjectFit, communication, reliability, policyCompliance, availability },
+  riskFlags: string[],             // e.g. ["low_availability","weak_demo","policy_risk"]
+  improvementChecklist: string[],  // max 5 items
+  autoSummary: string,             // 1–2 lines
+  profile: {
+    firstName, email, country, timezone,
+    languages[],
+    subjects[],
+    gradesSupported[],
+    experienceLevel, educationLevel,
+    teachingStyleTags[],
+    availability: { days[], slots[] }, // slots: "4-6pm" etc
+    shortBio,
+    introVideoUrl?
+  },
+  skillCheck: {
+    microTeachingAnswers: { q1, q2, q3 }
+  },
+  verification: {
+    idVerificationStatus: off|pending|passed|failed,
+    backgroundCheckStatus: off|pending|passed|failed
+  },
+  createdAt, updatedAt
+}
+
+Also add admin notifications:
+notifications: { id, forRole:"admin", type:"tutor_application_new", payload, createdAt, read }
+
+25.3) APPLY WIZARD (/careers/tutors/apply) — 2–4 MIN, AUTO-SAVE
+Wizard rules:
+- Progress indicator: 1/4, 2/4...
+- Auto-save draft after each field change to:
+  tutor_application_draft_v1_{userId}
+- Inline validation, no disruptive errors
+- Prefill: firstName/email/timezone from user account
+- Use dropdowns/chips wherever possible
+- On refresh, restore draft automatically
+
+Step 0: Account Gate
+- login/signup
+
+Step 1: Basics (45 sec)
+- First name (prefill)
+- Country (dropdown)
+- Timezone (auto)
+- Languages (chips)
+- Checkbox: “I have stable internet + laptop”
+
+Step 2: Teaching Fit (60 sec)
+- Subjects (chips)
+- Grades supported (chips)
+- Experience level (dropdown)
+- Teaching style tags (chips):
+  Structured / Patient / Exam-focused / Confidence-building / Visual methods
+- Availability:
+  Days (chips)
+  Time blocks (chips): 4–6pm, 6–8pm, 8–10pm (plus morning options)
+
+Step 3: Micro Skill Check (90 sec)
+- Q1: “Explain a hard topic to a weak student in 2 steps.” (max 280 chars)
+- Q2: “How do you handle a distracted student respectfully?” (max 280 chars)
+- Q3: “How do you confirm understanding in 2 minutes?” (max 280 chars)
+- Optional intro video URL (skippable)
+
+Step 4: Submit
+- Runs AI analysis (section 26)
+- If >= threshold: status → submitted + notify admin
+- If < threshold: status → held_by_ai and show improvement checklist + resubmit button
+
+25.4) STATUS TRACKER (/careers/tutors/status)
+Shows only:
+- Current status (friendly)
+- Next step button(s):
+  - Edit application (if draft/needs_changes/held_by_ai)
+  - Complete verification (if screening requires)
+  - “Go to Tutor Portal” (only if approved)
+Never show internal admin notes.
+
+=====================================================
+26) AI PRE-SCREENING GATE (MIN 70% BEFORE ADMIN SEES IT)
+=====================================================
+
+26.1) SETTINGS (ADMIN CONFIG)
+Add /admin/settings tab: “Hiring”
+- defaultMinTutorScore = 70 (editable)
+- autoHoldBelowThreshold = ON (default)
+- strictModePolicyRiskHold = ON (recommended)
+- allowAdminOverride = ON (default)
+
+26.2) AI ANALYZER PIPELINE (MUST WORK WITHOUT EXTERNAL API)
+Implement AIAnalyzer.evaluateTutorApplication(application):
+Outputs:
+- qualityScore (0–100)
+- dimensionScores:
+  clarity, structure, empathy, subjectFit, communication, reliability, policyCompliance, availability
+- riskFlags
+- improvementChecklist (max 5)
+- autoSummary (1–2 lines)
+
+MVP Scoring (deterministic heuristics; no API required):
+- Completeness: 0–20
+- Availability breadth: 0–15
+- Subject/grade fit: 0–10
+- Micro teaching quality: 0–35
+  - has steps (1) / (2) or “First/Then”
+  - student-focused wording
+  - concrete actions
+  - respectful tone
+- Policy compliance: 0–10
+  - no contact/off-platform hints (use PolicyEngine)
+- Communication clarity: 0–10
+  - short, readable, structured
+
+Risk flags:
+- low_availability (availability score low)
+- weak_demo (micro teaching score low)
+- missing_profile_fields
+- policy_risk (PolicyEngine match)
+
+26.3) THRESHOLD BEHAVIOR (HARD GATE)
+On submit:
+IF qualityScore >= defaultMinTutorScore AND (strictModePolicyRiskHold OFF OR no policy_risk):
+- status = submitted
+- create admin notification: tutor_application_new
+- show in admin queue
+
+ELSE:
+- status = held_by_ai (or needs_changes)
+- DO NOT notify admin
+- applicant sees:
+  - score + target score
+  - checklist (max 5)
+  - “Fix & Resubmit” (only edits micro answers + availability + bio)
+
+Admin override:
+- Admin can view “Held by AI” tab and manually pull into review.
+
+Optional upgrade:
+- If AI_API_KEY exists, plug a real LLM provider behind the same AIAnalyzer interface.
+- Still run PolicyEngine before and after AI output.
+- Must not break MVP if key missing.
+
+=====================================================
+27) ADMIN HIRING CENTER (FULL CONTROL)
+=====================================================
+
+27.1) ADMIN ROUTES (NEW)
+- /admin/tutor-applications
+Add widget on /admin command center:
+- “Tutor Applications” (New / Held / Needs Changes)
+
+27.2) ADMIN LIST (HIGH SIGNAL, LOW EFFORT)
+Table columns:
+- Name
+- Subjects
+- Languages
+- Availability
+- Score badge:
+  90–100 Elite / 80–89 Strong / 70–79 Pass / <70 Held
+- Flags chips (max 2)
+Actions:
+- View (opens Details Drawer)
+
+Filters:
+- Status
+- Score range
+- Flags
+- Subjects
+- Languages
+
+27.3) DRAWER VIEW + ACTIONS
+Drawer shows:
+- Summary (autoSummary)
+- Dimension scores (bars)
+- Micro teaching answers
+- Availability preview
+- Risk flags + checklist
+Buttons:
+- Request Changes (status=needs_changes + in-app message checklist)
+- Approve
+- Reject
+- Require Verification (toggle: ID/background; sets verification pending)
+
+Approve must:
+- Upgrade user role: tutor_applicant → tutor
+- Create tutors record (subjects/grades/languages/availability)
+- Set tutor isActive=true
+- Send in-app message: “Approved — complete onboarding”
+- Tutor becomes visible in matching engine immediately
+
+Reject must:
+- status=rejected
+- Optional message template to applicant
+
+Request changes must:
+- status=needs_changes
+- Provide exact items checklist
+
+=====================================================
+28) TUTOR POST-APPROVAL ONBOARDING (QUALITY + COMPLIANCE)
+=====================================================
+On first login to /tutor:
+1) Tutor Contract Modal (must accept):
+   - No sharing contact details
+   - No off-platform tutoring
+   - All sessions must be on EduBridge
+   - Violations logged and may cause suspension
+   If declined: tutor remains inactive
+
+2) Setup Checklist page (60 sec):
+   - confirm subjects/grades/languages
+   - confirm availability
+   - confirm teaching style tags
+   - done → tutor active + eligible for assignment
+
+=====================================================
+29) POLICY ENGINE INTEGRATION (MUST APPLY TO CAREERS TOO)
+=====================================================
+Apply PolicyEngine to:
+- applicant messaging
+- AI chat
+- tutor portal messaging
+- any free text fields in application (bio, micro answers)
+
+If blocked:
+- prevent submission if policy_risk is severe OR mark held_by_ai in strict mode
+- log incident + admin notification (if user already in system)
+
+=====================================================
+30) ACCEPTANCE TESTS (CAREERS BUTTON + FULL WIRING)
+=====================================================
+- “Careers” appears on homepage header and routes to /careers
+- “Become a Tutor” CTA routes to /careers/tutors
+- Apply wizard auto-saves drafts, restores on refresh
+- Submit triggers AIAnalyzer score and flags
+- Only score >= 70 appears in admin “New Tutor Applications”
+- Score < 70 goes to held_by_ai with improvement checklist + resubmit loop
+- Admin approves → user role becomes tutor → access /tutor works immediately
+- Approved tutor appears in /admin/matching and can be assigned to students
+- PolicyEngine blocks contact-sharing anywhere in this flow

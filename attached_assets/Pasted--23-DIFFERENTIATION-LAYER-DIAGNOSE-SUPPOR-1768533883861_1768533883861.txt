@@ -1,0 +1,170 @@
+=====================================================
+23) DIFFERENTIATION LAYER — “DIAGNOSE → SUPPORT → GROW”
+=====================================================
+EduBridge must not feel like a normal portal. It must feel like a caring learning system
+that finds the real reason and gives maximum support.
+
+Create 3 signature systems:
+A) Student Support Engine (Diagnosis → Prescription)
+B) Guided Care UX (Human support in interface)
+C) Community Games + Points (Motivation loop)
+
+-----------------------------------------------------
+23.A) STUDENT SUPPORT ENGINE (DIAGNOSIS → PRESCRIPTION)
+-----------------------------------------------------
+Add a dedicated “Support Center” in each portal that translates the student’s difficulty
+into an actionable plan. It must be visible and feel premium.
+
+Add data:
+support_plan: {
+  id, studentId, track, blockers[], rootCauses[], prioritySubjects[],
+  weeklyPlan:{sessionsPerWeek, sprintPerDayMin, homeworkRules[]},
+  accommodations:{...},
+  createdAt, updatedAt
+}
+
+1) Root Cause Clarity (Admin + Tutor view)
+- Show “Root Cause Summary” box (1–2 lines)
+- Show “Evidence” bullets (based on questionnaire + tutor notes + sprint outcomes)
+- Show “Prescription” (teaching method + rules)
+
+2) Student View (child-friendly but formal)
+Add “My Support Plan” drawer:
+- “What I’m great at”
+- “What is blocking me”
+- “How we fix it this week” (2 actions only)
+- “Today’s rule” (one rule: micro steps / visuals / safe space / backfill)
+
+3) Automatic Support Actions
+After each session note or sprint:
+- Update support_plan insights
+- If a pattern repeats (e.g. memory leak), auto-suggest:
+  - shorter tasks
+  - extra recap
+  - new foundation backfill
+- Notify admin if student is not improving.
+
+-----------------------------------------------------
+23.B) GUIDED CARE UX (INTERFACE THAT FEELS LIKE SUPPORT)
+-----------------------------------------------------
+Add “Care moments” inside UI, not only chat.
+
+1) “You’re not alone” micro-cues:
+- If student fails: show calm supportive hint + one retry option
+- If student misses session: show “Let’s reschedule” + notify parent/admin
+- If student does well: show praise (formal) + unlock points
+
+2) Tutor “Care workflow” (fast)
+- After each session note, show:
+  “Write 1 encouragement line (optional)”
+- This becomes the student’s recap message and drives motivation.
+
+3) Parent “Care prompts”
+- Parent portal shows:
+  - “How to help this week” (2 steps)
+  - “What not to do” (gentle guidance)
+  - “When to worry” (only if necessary)
+
+-----------------------------------------------------
+23.C) COMMUNITY GAMES + POINTS (PORTAL-ONLY, SAFE)
+-----------------------------------------------------
+Add a “Games & League” system that drives engagement but stays educational.
+NO public chat. NO contact exchange. Everything stays inside platform.
+
+DATA:
+points_ledger: { id, userId, studentId?, type, points, reason, createdAt }
+badges: { id, code, title, criteria, icon }
+leaderboards: { id, scope, period, entries[] }
+game_sessions: { id, gameId, studentId, score, accuracy, duration, createdAt }
+
+POINTS (simple, meaningful):
+- Sprint completed: +10
+- Homework submitted: +15
+- Session attended: +20
+- Streak day: +5
+- Helping behavior (tutor award): +5
+- Policy violation attempts: -30 (admin configurable)
+
+BADGES:
+- “Consistency Star” (7-day streak)
+- “Comeback Kid” (improvement after low scores)
+- “Focus Master” (3 sprints without drop)
+- “Math Climber” / “Reading Builder”
+
+GAMES (mini, educational, 2–5 minutes):
+1) Speed Match (Math facts / vocabulary)
+2) Memory Ladder (sequence recall, working memory training)
+3) Word Builder (spelling/phonics)
+4) Logic Paths (pattern recognition)
+
+Each game:
+- grade-adjusted difficulty
+- no free typing (mostly tap/select)
+- ends with:
+  score, accuracy, 1 improvement tip
+- contributes to signals lightly (optional) and to points strongly.
+
+LEAGUE SYSTEM (safe community competition):
+- Weekly leaderboard per grade bracket:
+  Grade 1–3, 4–6, 7–10
+- Display only:
+  first name + masked ID (no last name, no contact)
+- Allow opt-out (parent setting).
+
+HOME SCREEN DISC (signature UI element):
+Add on Student dashboard:
+- a clean “Community Disc” widget:
+  - Current points
+  - Current league rank
+  - “Play 3-min game” CTA
+  - “Weekly challenge” CTA
+
+Tutor portal:
+- “Award points” button (limited) per student for good behavior/effort
+- “Challenge suggestions” based on blocker (memory game for memory blocker)
+
+Admin portal:
+- Full control:
+  - point rules editor
+  - badges editor
+  - weekly challenges content
+  - moderation
+- Admin can disable games per student or per grade.
+
+Parent portal:
+- Shows points + badge progress
+- Allows:
+  opt-out of leaderboard
+  playtime limits (e.g. max 10 min/day)
+
+SAFETY FOR COMMUNITY:
+- No free chat in games.
+- No usernames beyond first name + masked ID.
+- No sharing text fields.
+- All actions logged.
+
+-----------------------------------------------------
+23.D) WHAT MAKES IT “NOT A NORMAL PORTAL” (MUST BE OBVIOUS)
+-----------------------------------------------------
+On every dashboard add a premium “Support + Growth” section:
+
+Student:
+- “My Support Plan” + “Play 3-min skill game”
+Tutor:
+- “Where we stopped” + “Support prescription”
+Admin:
+- “Improvement & Red Flags” + “Incidents & policy”
+Parent:
+- “Weekly care steps” + “Progress & motivation”
+
+This makes EduBridge feel like a real supportive system, not a school portal.
+
+-----------------------------------------------------
+23.E) ACCEPTANCE TESTS (DIFFERENTIATION)
+-----------------------------------------------------
+- Students can play a mini-game from dashboard; points update instantly.
+- Weekly leaderboard shows rank and masked names.
+- Tutor can award points; admin can change rules.
+- Support plan exists per student and updates after sessions/sprints.
+- Parent can set play limits and opt-out of leaderboard.
+- No contact sharing possible in any community feature.

@@ -8,6 +8,11 @@ import { pool } from "./db";
 import { insertUserSchema, insertAssessmentSchema } from "@shared/schema";
 import { z } from "zod";
 import { registerAIChatRoutes } from "./ai-chat";
+import { evaluateTutorApplication } from "./ai-analyzer";
+import { checkPolicy } from "./policy-engine";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import { tutorApplications, pointsLedger, gameSessions, badges, userBadges, streaks, notifications, leaderboards } from "@shared/schema";
 
 declare module "express-session" {
   interface SessionData {
@@ -176,6 +181,190 @@ export async function registerRoutes(
   });
 
   registerAIChatRoutes(app);
+
+  app.post("/api/tutor-applications", async (req: Request, res: Response) => {
+    try {
+      const { profile, skillCheck } = req.body;
+      
+      if (!profile || !skillCheck) {
+        return res.status(400).json({ message: "Profile and skill check are required" });
+      }
+
+      const analysis = evaluateTutorApplication({ profile, skillCheck });
+      
+      const minScore = 70;
+      const status = analysis.qualityScore >= minScore && !analysis.riskFlags.includes("policy_risk") 
+        ? "submitted" 
+        : "held_by_ai";
+
+      const [application] = await db.insert(tutorApplications).values({
+        userId: req.session.userId || null,
+        status,
+        qualityScore: analysis.qualityScore,
+        dimensionScores: analysis.dimensionScores,
+        riskFlags: analysis.riskFlags,
+        improvementChecklist: analysis.improvementChecklist,
+        autoSummary: analysis.autoSummary,
+        profile,
+        skillCheck,
+        submittedAt: new Date(),
+      }).returning();
+
+      if (status === "submitted") {
+        await db.insert(notifications).values({
+          forRole: "admin",
+          type: "tutor_application_new",
+          title: "New Tutor Application",
+          message: `${profile.firstName} has submitted a tutor application with score ${analysis.qualityScore}%`,
+          payload: { applicationId: application.id },
+        });
+      }
+
+      res.json({ 
+        application,
+        analysis,
+        status,
+        message: status === "submitted" 
+          ? "Application submitted successfully! We'll review it soon." 
+          : "Your application needs some improvements before review."
+      });
+    } catch (error) {
+      console.error("Tutor application error:", error);
+      res.status(500).json({ message: "Failed to submit application" });
+    }
+  });
+
+  app.get("/api/tutor-applications/status", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const applications = await db.select().from(tutorApplications)
+        .where(eq(tutorApplications.userId, req.session.userId));
+
+      res.json({ applications });
+    } catch (error) {
+      console.error("Get applications error:", error);
+      res.status(500).json({ message: "Failed to get applications" });
+    }
+  });
+
+  app.post("/api/games/complete", async (req: Request, res: Response) => {
+    try {
+      const { gameId, score, accuracy, duration, grade, studentId } = req.body;
+
+      const [gameSession] = await db.insert(gameSessions).values({
+        gameId,
+        studentId: studentId || req.session.userId,
+        userId: req.session.userId || null,
+        score,
+        accuracy,
+        duration,
+        grade,
+      }).returning();
+
+      const pointsEarned = 10 + Math.floor(accuracy / 10);
+      
+      await db.insert(pointsLedger).values({
+        userId: req.session.userId || null,
+        studentId: studentId || req.session.userId,
+        type: "game",
+        points: pointsEarned,
+        reason: `Completed ${gameId} with ${accuracy}% accuracy`,
+      });
+
+      res.json({ 
+        gameSession, 
+        pointsEarned,
+        message: `Great job! You earned ${pointsEarned} points!`
+      });
+    } catch (error) {
+      console.error("Game completion error:", error);
+      res.status(500).json({ message: "Failed to record game" });
+    }
+  });
+
+  app.get("/api/gamification/stats", async (req: Request, res: Response) => {
+    try {
+      const studentId = (req.query.studentId as string) || req.session.userId || "";
+
+      const allPoints = await db.select().from(pointsLedger);
+      const points = allPoints.filter(p => p.studentId === studentId);
+      const totalPoints = points.reduce((sum, p) => sum + p.points, 0);
+
+      const allBadges = await db.select().from(userBadges);
+      const earnedBadges = allBadges.filter(b => b.studentId === studentId);
+
+      const allStreaks = await db.select().from(streaks);
+      const currentStreakData = allStreaks.find(s => s.studentId === studentId);
+
+      const allGames = await db.select().from(gameSessions);
+      const games = allGames.filter(g => g.studentId === studentId);
+
+      res.json({
+        totalPoints,
+        badgeCount: earnedBadges.length,
+        currentStreak: currentStreakData?.currentStreak || 0,
+        gamesPlayed: games.length,
+        recentPoints: points.slice(-5),
+      });
+    } catch (error) {
+      console.error("Gamification stats error:", error);
+      res.status(500).json({ message: "Failed to get stats" });
+    }
+  });
+
+  app.get("/api/leaderboard/:gradeBracket", async (req: Request, res: Response) => {
+    try {
+      const { gradeBracket } = req.params;
+      
+      const allPoints = await db.select().from(pointsLedger);
+      
+      const studentPoints = allPoints.reduce((acc, p) => {
+        if (p.studentId) {
+          acc[p.studentId] = (acc[p.studentId] || 0) + p.points;
+        }
+        return acc;
+      }, {} as Record<string, number>);
+
+      const leaderboard = Object.entries(studentPoints)
+        .map(([studentId, points]) => ({
+          studentId,
+          maskedId: studentId.slice(0, 1).toUpperCase() + "***" + studentId.slice(-2),
+          firstName: "Student",
+          points,
+        }))
+        .sort((a, b) => b.points - a.points)
+        .slice(0, 20);
+
+      res.json({ leaderboard, gradeBracket });
+    } catch (error) {
+      console.error("Leaderboard error:", error);
+      res.status(500).json({ message: "Failed to get leaderboard" });
+    }
+  });
+
+  app.get("/api/badges", async (req: Request, res: Response) => {
+    try {
+      const allBadges = await db.select().from(badges);
+      res.json({ badges: allBadges });
+    } catch (error) {
+      console.error("Badges error:", error);
+      res.status(500).json({ message: "Failed to get badges" });
+    }
+  });
+
+  app.post("/api/policy/check", async (req: Request, res: Response) => {
+    try {
+      const { text, context } = req.body;
+      const result = checkPolicy(text, context);
+      res.json(result);
+    } catch (error) {
+      console.error("Policy check error:", error);
+      res.status(500).json({ message: "Failed to check policy" });
+    }
+  });
 
   return httpServer;
 }

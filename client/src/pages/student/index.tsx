@@ -1,9 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { RouteGuard } from "@/components/portal/RouteGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { AIAssistant } from "@/components/portal/AIAssistant";
+import { CommunityDisc } from "@/components/gamification/CommunityDisc";
+import { MySupportPlan, SupportPlanTrigger } from "@/components/portal/MySupportPlan";
 import {
   getSessionsByStudentId,
   getHomeworkByStudentId,
@@ -28,6 +30,7 @@ import {
   BookMarked,
   MessageSquare,
   AlertCircle,
+  Gamepad2,
 } from "lucide-react";
 import { format, isWithinInterval, addMinutes, isFuture, isPast, parseISO } from "date-fns";
 
@@ -45,6 +48,23 @@ function SignalBar({ label, value, color }: { label: string; value: number; colo
 
 export default function StudentDashboard() {
   const { user, student } = useAuth();
+  const [isSupportPlanOpen, setIsSupportPlanOpen] = useState(false);
+
+  const supportPlan = {
+    strengths: ["Creative thinking", "Visual learning", "Persistence"],
+    blockers: [
+      { name: "Memory retention", explanation: "Struggles to recall formulas after a few days" },
+      { name: "Focus duration", explanation: "Attention drops after 20 minutes" },
+    ],
+    weeklyActions: [
+      "Use flashcards for 10 minutes daily",
+      "Take a 5-minute break every 20 minutes",
+    ],
+    todayRule: {
+      title: "Take micro steps",
+      description: "Break each problem into 3 smaller parts before solving",
+    },
+  };
 
   const { sessions, homework, notes, tutorName, upcomingEvents, nextAction, todayItems } = useMemo(() => {
     if (!student) {
@@ -288,6 +308,47 @@ export default function StudentDashboard() {
             </Card>
           </div>
 
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card className="md:col-span-2 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium flex items-center gap-2">
+                  <Gamepad2 className="w-4 h-4" />
+                  Games & Challenges
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Earn points, collect badges, and climb the leaderboard!
+                </p>
+                <Link href="/dashboard/games">
+                  <Button data-testid="button-play-games">
+                    <Gamepad2 className="w-4 h-4 mr-2" />
+                    Play Games
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium">Community</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CommunityDisc
+                  totalPoints={350}
+                  streakDays={5}
+                  badgeCount={3}
+                  leaderboardRank={12}
+                  onViewGames={() => window.location.href = "/dashboard/games"}
+                  onViewLeaderboard={() => {}}
+                  onViewBadges={() => {}}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          <SupportPlanTrigger onClick={() => setIsSupportPlanOpen(true)} />
+
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-medium flex items-center gap-2">
@@ -338,6 +399,12 @@ export default function StudentDashboard() {
           </Card>
         </div>
         <AIAssistant role="student" context={{ studentName: user?.firstName, grade: student?.grade }} />
+        <MySupportPlan
+          isOpen={isSupportPlanOpen}
+          onClose={() => setIsSupportPlanOpen(false)}
+          plan={supportPlan}
+          studentName={user?.firstName || "Student"}
+        />
       </PortalLayout>
     </RouteGuard>
   );

@@ -9,11 +9,26 @@ interface DrawerMenuProps {
 const menuSections = [
   {
     title: "PLATFORM",
-    items: ["HOW IT WORKS", "FIND TUTORS", "OFFERS"],
+    items: [
+      { label: "HOW IT WORKS", href: "/#how-it-works" },
+      { label: "FIND TUTORS", href: "/#tutors" },
+      { label: "OFFERS", href: "/#offers" },
+    ],
+  },
+  {
+    title: "CAREERS",
+    items: [
+      { label: "BECOME A TUTOR", href: "/careers/tutors" },
+      { label: "JOIN OUR TEAM", href: "/careers/team" },
+    ],
   },
   {
     title: "SUPPORT",
-    items: ["HELP CENTER", "CONTACT US", "PRIVACY"],
+    items: [
+      { label: "HELP CENTER", href: "/help" },
+      { label: "CONTACT US", href: "/contact" },
+      { label: "PRIVACY", href: "/privacy" },
+    ],
   },
 ];
 
@@ -78,15 +93,15 @@ export function DrawerMenu({ isOpen, onClose }: DrawerMenuProps) {
                     <div className="space-y-3">
                       {section.items.map((item, itemIndex) => (
                         <motion.a
-                          key={item}
-                          href="#"
+                          key={item.label}
+                          href={item.href}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.2 + sectionIndex * 0.1 + itemIndex * 0.05 }}
                           className="block text-white font-semibold text-base hover:text-brand-blue transition-colors"
-                          data-testid={`link-drawer-${item.toLowerCase().replace(/\s+/g, "-")}`}
+                          data-testid={`link-drawer-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                         >
-                          {item}
+                          {item.label}
                         </motion.a>
                       ))}
                     </div>

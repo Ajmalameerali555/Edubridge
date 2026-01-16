@@ -31,12 +31,18 @@ import StudentSessions from "@/pages/student/sessions";
 import StudentHomework from "@/pages/student/homework";
 import StudentReports from "@/pages/student/reports";
 import StudentMessages from "@/pages/student/messages";
+import StudentGames from "@/pages/student/games";
 
 import ParentPortal from "@/pages/parent/index";
 import ParentChild from "@/pages/parent/child";
 import ParentSessions from "@/pages/parent/sessions";
 import ParentReports from "@/pages/parent/reports";
 import ParentMessages from "@/pages/parent/messages";
+
+import CareersHub from "@/pages/careers/index";
+import TutorRecruitment from "@/pages/careers/tutors";
+import TutorApply from "@/pages/careers/apply";
+import TeamCareers from "@/pages/careers/team";
 
 function Router() {
   return (
@@ -74,12 +80,19 @@ function Router() {
       <Route path="/student/homework" component={StudentHomework} />
       <Route path="/student/reports" component={StudentReports} />
       <Route path="/student/messages" component={StudentMessages} />
+      <Route path="/student/games" component={StudentGames} />
+      <Route path="/dashboard/games" component={StudentGames} />
 
       <Route path="/parent" component={ParentPortal} />
       <Route path="/parent/child" component={ParentChild} />
       <Route path="/parent/sessions" component={ParentSessions} />
       <Route path="/parent/reports" component={ParentReports} />
       <Route path="/parent/messages" component={ParentMessages} />
+
+      <Route path="/careers" component={CareersHub} />
+      <Route path="/careers/tutors" component={TutorRecruitment} />
+      <Route path="/careers/tutors/apply" component={TutorApply} />
+      <Route path="/careers/team" component={TeamCareers} />
 
       <Route component={NotFound} />
     </Switch>

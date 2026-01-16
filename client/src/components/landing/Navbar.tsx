@@ -40,12 +40,19 @@ export function Navbar({ onOpenAssessment, onOpenLogin }: NavbarProps) {
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <a
+                href="/careers/tutors"
+                className="hidden sm:block px-4 py-2.5 text-brand-ink font-medium text-sm hover:text-brand-blue transition-colors"
+                data-testid="link-become-tutor"
+              >
+                Become a Tutor
+              </a>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onOpenLogin}
-                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white border-2 border-brand-blue text-brand-blue font-semibold text-sm sm:text-base hover:bg-brand-blue/5 transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white border-2 border-brand-blue text-brand-blue font-semibold text-sm sm:text-base hover:bg-brand-blue/5 transition-colors"
                 data-testid="button-login-nav"
               >
                 LOG IN

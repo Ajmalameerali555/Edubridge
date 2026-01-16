@@ -59,3 +59,4 @@ export type InsertAssessment = z.infer<typeof insertAssessmentSchema>;
 export type Assessment = typeof assessments.$inferSelect;
 
 export * from "./models/chat";
+export * from "./models/differentiation";

@@ -170,7 +170,7 @@ export function AIAssistant({ role, context, assistantName, welcomeMessage }: AI
       )}
 
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-[380px] h-[520px] flex flex-col shadow-2xl z-50 overflow-hidden">
+        <Card className="fixed bottom-6 right-6 w-[380px] h-[520px] flex flex-col shadow-2xl z-50 overflow-hidden bg-card border border-border">
           <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
@@ -192,7 +192,7 @@ export function AIAssistant({ role, context, assistantName, welcomeMessage }: AI
             </Button>
           </div>
 
-          <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+          <ScrollArea className="flex-1 p-4 bg-background" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -229,7 +229,7 @@ export function AIAssistant({ role, context, assistantName, welcomeMessage }: AI
             </div>
           </ScrollArea>
 
-          <div className="p-4 border-t">
+          <div className="p-4 border-t bg-card">
             <div className="flex gap-2">
               <Input
                 ref={inputRef}
