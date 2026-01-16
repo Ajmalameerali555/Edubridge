@@ -44,6 +44,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/staff-login" component={StaffLogin} />
       <Route path="/dashboard" component={StudentDashboard} />
+      <Route path="/student" component={StudentDashboard} />
       
       <Route path="/admin" component={AdminPortal} />
       <Route path="/admin/inbox" component={AdminInbox} />
@@ -67,6 +68,12 @@ function Router() {
       <Route path="/dashboard/homework" component={StudentHomework} />
       <Route path="/dashboard/reports" component={StudentReports} />
       <Route path="/dashboard/messages" component={StudentMessages} />
+
+      <Route path="/student/sprint" component={StudentSprint} />
+      <Route path="/student/sessions" component={StudentSessions} />
+      <Route path="/student/homework" component={StudentHomework} />
+      <Route path="/student/reports" component={StudentReports} />
+      <Route path="/student/messages" component={StudentMessages} />
 
       <Route path="/parent" component={ParentPortal} />
       <Route path="/parent/child" component={ParentChild} />

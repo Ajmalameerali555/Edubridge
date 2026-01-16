@@ -5,6 +5,8 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/contexts/AuthContext";
+import { createStudent } from "@/lib/datastore";
 
 interface AssessmentModalProps {
   isOpen: boolean;
@@ -73,6 +75,7 @@ const motivations = [
 
 export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
   const [, setLocation] = useLocation();
+  const { register } = useAuth();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showReport, setShowReport] = useState(false);
@@ -169,6 +172,34 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
       };
 
       await apiRequest("POST", "/api/auth/register", registrationData);
+      
+      // Also register in client-side auth for localStorage-based auth
+      const result = await register({
+        email: contactInfo.email,
+        password: password,
+        firstName: contactInfo.studentName,
+        lastName: "",
+        mobile: contactInfo.mobile,
+        role: "student" as const,
+      });
+      
+      if (result.success && result.user) {
+        // Create student profile linked to the user
+        createStudent({
+          userId: result.user.id,
+          grade: contactInfo.grade,
+          subjects: [],
+          track: answers.academicChallenge || "General",
+          blockers: [],
+          signals: {
+            confidence: 50,
+            memory: 50,
+            language: 50,
+            foundation: 50,
+          },
+        });
+      }
+      
       setIsLoading(false);
       setShowReport(true);
     } catch (error: any) {
@@ -181,7 +212,7 @@ export function AssessmentModal({ isOpen, onClose }: AssessmentModalProps) {
   const handleVerifyAndSubmit = () => {
     setShowReport(false);
     handleClose();
-    setLocation("/dashboard");
+    setLocation("/student");
   };
 
   const handleClose = () => {

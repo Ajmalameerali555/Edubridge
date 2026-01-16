@@ -10,6 +10,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **AI Assistants**: Added personalized AI chat assistants to all portals:
+  - **EduBuddy** (Student Portal): Friendly, encouraging assistant for homework help and study tips
+  - **TutorAssist** (Tutor Portal): Professional assistant for session planning and student management
+  - **AdminInsight** (Admin Portal): Analytical assistant for platform metrics and issue tracking
+  - **ParentConnect** (Parent Portal): Warm, reassuring assistant for child progress updates
 - **User Authentication System**: Added email/password registration and login with secure session management
 - **Assessment Modal**: 7-step questionnaire with password creation for account setup
 - **User Dashboard**: Personal portal showing profile, student info, and assessment status
@@ -41,6 +46,7 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/auth/logout` - Logout and destroy session
 - `GET /api/auth/me` - Get current authenticated user
 - `GET /api/assessments` - Get user's assessments
+- `POST /api/ai-chat` - AI chat endpoint with SSE streaming (role-based system prompts)
 
 ### Database Schema
 - **users**: id, email, password (hashed), parentName, studentName, mobile, grade, createdAt
@@ -72,7 +78,8 @@ The project follows strict design guidelines defined in `design_guidelines.md`:
 ### Key Components
 - `AssessmentModal.tsx` - Multi-step assessment form with PDF/PNG report generation
 - `LoginModal.tsx` - Login form for returning users
-- `Dashboard.tsx` - User portal with profile and assessment status
+- `AIAssistant.tsx` - Reusable AI chat component with floating button and streaming responses
+- `StudentDashboard.tsx` - Student portal with profile and assessment status
 - `Navbar.tsx` - Navigation with GET STARTED and LOG IN buttons
 
 ### Build System
