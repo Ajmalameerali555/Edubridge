@@ -11,7 +11,9 @@ import NotFound from "@/pages/not-found";
 import AdminPortal from "@/pages/admin/index";
 import AdminInbox from "@/pages/admin/inbox";
 import AdminStudents from "@/pages/admin/students";
+import AdminStudentProfile from "@/pages/admin/student-profile";
 import AdminTutors from "@/pages/admin/tutors";
+import AdminTutorProfile from "@/pages/admin/tutor-profile";
 import AdminMatching from "@/pages/admin/matching";
 import AdminSessions from "@/pages/admin/sessions";
 import AdminIncidents from "@/pages/admin/incidents";
@@ -56,7 +58,9 @@ function Router() {
       <Route path="/admin" component={AdminPortal} />
       <Route path="/admin/inbox" component={AdminInbox} />
       <Route path="/admin/students" component={AdminStudents} />
+      <Route path="/admin/students/:id" component={AdminStudentProfile} />
       <Route path="/admin/tutors" component={AdminTutors} />
+      <Route path="/admin/tutors/:id" component={AdminTutorProfile} />
       <Route path="/admin/matching" component={AdminMatching} />
       <Route path="/admin/sessions" component={AdminSessions} />
       <Route path="/admin/incidents" component={AdminIncidents} />

@@ -8,6 +8,7 @@ import { pool } from "./db";
 import { insertUserSchema, insertAssessmentSchema } from "@shared/schema";
 import { z } from "zod";
 import { registerAIChatRoutes } from "./ai-chat";
+import { registerAISessionReportRoutes } from "./ai-session-report";
 import { registerAudioRoutes } from "./replit_integrations/audio";
 import { evaluateTutorApplication } from "./ai-analyzer";
 import { checkPolicy } from "./policy-engine";
@@ -182,6 +183,7 @@ export async function registerRoutes(
   });
 
   registerAIChatRoutes(app);
+  registerAISessionReportRoutes(app);
   registerAudioRoutes(app);
 
   app.post("/api/tutor-applications", async (req: Request, res: Response) => {

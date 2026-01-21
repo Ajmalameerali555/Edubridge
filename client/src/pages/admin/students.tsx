@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLocation } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { RouteGuard } from "@/components/portal/RouteGuard";
 import { SideDrawer } from "@/components/portal/SideDrawer";
@@ -32,6 +33,7 @@ const tracks = ["Visual Learner Track", "Auditory Learner Track", "Hands-on Lear
 
 export default function AdminStudents() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [students, setStudents] = React.useState<Student[]>([]);
   const [selectedStudent, setSelectedStudent] = React.useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -145,7 +147,7 @@ export default function AdminStudents() {
                   <Card
                     key={s.id}
                     className="cursor-pointer hover-elevate"
-                    onClick={() => setSelectedStudent(s)}
+                    onClick={() => setLocation(`/admin/students/${s.id}`)}
                     data-testid={`row-student-${s.id}`}
                   >
                     <CardContent className="p-4">

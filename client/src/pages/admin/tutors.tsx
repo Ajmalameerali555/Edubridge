@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLocation } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
 import { RouteGuard } from "@/components/portal/RouteGuard";
 import { SideDrawer } from "@/components/portal/SideDrawer";
@@ -29,6 +30,7 @@ const allGrades = ["4", "5", "6", "7", "8", "9", "10"];
 
 export default function AdminTutors() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [tutors, setTutors] = React.useState<Tutor[]>([]);
   const [selectedTutor, setSelectedTutor] = React.useState<Tutor | null>(null);
   const [subjectFilter, setSubjectFilter] = React.useState<string>("all");
@@ -119,7 +121,7 @@ export default function AdminTutors() {
                   <Card
                     key={t.id}
                     className="cursor-pointer hover-elevate"
-                    onClick={() => setSelectedTutor(t)}
+                    onClick={() => setLocation(`/admin/tutors/${t.id}`)}
                     data-testid={`row-tutor-${t.id}`}
                   >
                     <CardContent className="p-4">

@@ -86,6 +86,49 @@ export interface Session {
   createdAt: string;
 }
 
+
+export interface SessionReport {
+  id: string;
+  sessionId: string;
+  studentId: string;
+  tutorId: string;
+  createdAt: string;
+  overallScore: number; // 1-10
+  summary: string;
+  whatWentWell: string[];
+  whatToImprove: string[];
+  actionItems: string[];
+  tutorNotes?: string;
+}
+
+export interface Assignment {
+  id: string;
+  studentId: string;
+  tutorId?: string;
+  subject: string;
+  title: string;
+  description?: string;
+  dueAt: string;
+  status: "assigned" | "submitted" | "graded";
+  submissionUrl?: string;
+  grade?: string;
+  feedback?: string;
+  createdAt: string;
+}
+
+export interface Quiz {
+  id: string;
+  studentId: string;
+  tutorId?: string;
+  subject: string;
+  title: string;
+  questions: { id: string; q: string; options: string[]; answerIndex: number }[];
+  status: "assigned" | "attempted" | "graded";
+  score?: number;
+  createdAt: string;
+}
+
+
 export interface Note {
   id: string;
   sessionId: string;
@@ -182,6 +225,9 @@ export interface Database {
   tutors: Tutor[];
   questionnaires: Questionnaire[];
   sessions: Session[];
+  sessionReports: SessionReport[];
+  assignments: Assignment[];
+  quizzes: Quiz[];
   notes: Note[];
   homework: Homework[];
   messages: Message[];
@@ -544,6 +590,9 @@ function createSeedData(): Database {
     tutors: [tutor1, tutor2],
     questionnaires: [],
     sessions: [session1, session2, session3],
+    sessionReports: [],
+    assignments: [],
+    quizzes: [],
     notes: [note1],
     homework: [homework1, homework2],
     messages: [message1, message2],
@@ -763,6 +812,105 @@ export function updateSession(id: string, updates: Partial<Session>): Session | 
   db.sessions[index] = { ...db.sessions[index], ...updates };
   setDB(db);
   return db.sessions[index];
+}
+
+
+export function getSessionReportsByStudentId(studentId: string): SessionReport[] {
+  const db = getDB();
+  return db.sessionReports
+    .filter((r) => r.studentId === studentId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function getSessionReportsByTutorId(tutorId: string): SessionReport[] {
+  const db = getDB();
+  return db.sessionReports
+    .filter((r) => r.tutorId === tutorId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function getSessionReportBySessionId(sessionId: string): SessionReport | undefined {
+  const db = getDB();
+  return db.sessionReports.find((r) => r.sessionId === sessionId);
+}
+
+export function upsertSessionReport(report: Omit<SessionReport, "id" | "createdAt"> & { id?: string; createdAt?: string }): SessionReport {
+  const db = getDB();
+  const existingIndex = report.id ? db.sessionReports.findIndex((r) => r.id === report.id) : db.sessionReports.findIndex((r) => r.sessionId === report.sessionId);
+  const normalized: SessionReport = {
+    id: report.id ?? "report_" + generateId(),
+    createdAt: report.createdAt ?? new Date().toISOString(),
+    sessionId: report.sessionId,
+    studentId: report.studentId,
+    tutorId: report.tutorId,
+    overallScore: report.overallScore,
+    summary: report.summary,
+    whatWentWell: report.whatWentWell,
+    whatToImprove: report.whatToImprove,
+    actionItems: report.actionItems,
+    tutorNotes: report.tutorNotes,
+  };
+
+  if (existingIndex >= 0) db.sessionReports[existingIndex] = normalized;
+  else db.sessionReports.push(normalized);
+
+  setDB(db);
+  return normalized;
+}
+
+export function getAssignmentsByStudentId(studentId: string): Assignment[] {
+  const db = getDB();
+  return db.assignments
+    .filter((a) => a.studentId === studentId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function getAssignmentsByTutorId(tutorId: string): Assignment[] {
+  const db = getDB();
+  return db.assignments
+    .filter((a) => a.tutorId === tutorId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function createAssignment(data: Omit<Assignment, "id" | "createdAt">): Assignment {
+  const db = getDB();
+  const assignment: Assignment = { id: "asg_" + generateId(), createdAt: new Date().toISOString(), ...data };
+  db.assignments.push(assignment);
+  setDB(db);
+  return assignment;
+}
+
+export function updateAssignment(id: string, updates: Partial<Assignment>): Assignment | undefined {
+  const db = getDB();
+  const index = db.assignments.findIndex((a) => a.id === id);
+  if (index === -1) return undefined;
+  db.assignments[index] = { ...db.assignments[index], ...updates };
+  setDB(db);
+  return db.assignments[index];
+}
+
+export function getQuizzesByStudentId(studentId: string): Quiz[] {
+  const db = getDB();
+  return db.quizzes
+    .filter((q) => q.studentId === studentId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function createQuiz(data: Omit<Quiz, "id" | "createdAt">): Quiz {
+  const db = getDB();
+  const quiz: Quiz = { id: "quiz_" + generateId(), createdAt: new Date().toISOString(), ...data };
+  db.quizzes.push(quiz);
+  setDB(db);
+  return quiz;
+}
+
+export function updateQuiz(id: string, updates: Partial<Quiz>): Quiz | undefined {
+  const db = getDB();
+  const index = db.quizzes.findIndex((q) => q.id === id);
+  if (index === -1) return undefined;
+  db.quizzes[index] = { ...db.quizzes[index], ...updates };
+  setDB(db);
+  return db.quizzes[index];
 }
 
 export function getAllSessions(): Session[] {
