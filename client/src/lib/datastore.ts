@@ -234,9 +234,17 @@ export interface Database {
   settings: Settings;
 }
 
-/** ---------- Safety helpers (prevents "filter of undefined") ---------- */
+/** ---------- Safety helpers (prevents "filter/includes of undefined") ---------- */
 function asArray<T>(v: T[] | undefined | null): T[] {
   return Array.isArray(v) ? v : [];
+}
+
+function asString(v: unknown): string {
+  return typeof v === "string" ? v : "";
+}
+
+function cleanStringArray(v: unknown): string[] {
+  return asArray<string>(v as any).filter((x): x is string => typeof x === "string" && x.trim().length > 0);
 }
 
 function generateId(): string {
@@ -276,17 +284,7 @@ function getDefaultSettings(): Settings {
       maskPhoneEmail: true,
       blockPhoneEmailSharing: true,
       blockExternalLinks: true,
-      blockedKeywords: [
-        "whatsapp",
-        "call me",
-        "telegram",
-        "dm",
-        "number",
-        "mobile",
-        "contact",
-        "phone",
-        "email me",
-      ],
+      blockedKeywords: ["whatsapp", "call me", "telegram", "dm", "number", "mobile", "contact", "phone", "email me"],
     },
     sessionPolicies: {
       meetLinkLockedAfterSchedule: true,
@@ -307,20 +305,8 @@ function getDefaultSettings(): Settings {
           items: ["Read chapter 3", "Answer questions 1-5"],
         },
       ],
-      reports: [
-        {
-          id: "rpt1",
-          name: "Weekly Progress",
-          template: "Student showed improvement in {subject}...",
-        },
-      ],
-      tutorNotes: [
-        {
-          id: "tn1",
-          name: "Standard Session Note",
-          template: "Covered {topic}. Student response: {response}/5",
-        },
-      ],
+      reports: [{ id: "rpt1", name: "Weekly Progress", template: "Student showed improvement in {subject}..." }],
+      tutorNotes: [{ id: "tn1", name: "Standard Session Note", template: "Covered {topic}. Student response: {response}/5" }],
     },
     branding: {
       appName: "EduBridge Learning",
@@ -355,24 +341,25 @@ function normalizeDB(input: any): Database {
   };
 
   // Extra hardening of settings sub-keys (in case older DB versions exist)
+  const def = getDefaultSettings();
   db.settings = {
-    ...getDefaultSettings(),
+    ...def,
     ...db.settings,
-    decoderRules: { ...getDefaultSettings().decoderRules, ...(db.settings?.decoderRules ?? {}) },
+    decoderRules: { ...def.decoderRules, ...(db.settings?.decoderRules ?? {}) },
     communicationControls: {
-      ...getDefaultSettings().communicationControls,
+      ...def.communicationControls,
       ...(db.settings?.communicationControls ?? {}),
-      blockedKeywords: asArray<string>(db.settings?.communicationControls?.blockedKeywords),
+      blockedKeywords: cleanStringArray(db.settings?.communicationControls?.blockedKeywords),
     },
-    sessionPolicies: { ...getDefaultSettings().sessionPolicies, ...(db.settings?.sessionPolicies ?? {}) },
+    sessionPolicies: { ...def.sessionPolicies, ...(db.settings?.sessionPolicies ?? {}) },
     templates: {
-      ...getDefaultSettings().templates,
+      ...def.templates,
       ...(db.settings?.templates ?? {}),
       homework: asArray(db.settings?.templates?.homework),
       reports: asArray(db.settings?.templates?.reports),
       tutorNotes: asArray(db.settings?.templates?.tutorNotes),
     },
-    branding: { ...getDefaultSettings().branding, ...(db.settings?.branding ?? {}) },
+    branding: { ...def.branding, ...(db.settings?.branding ?? {}) },
   };
 
   return db;
@@ -1057,24 +1044,26 @@ export function getAllHomework(): Homework[] {
   return getDB().homework;
 }
 
-export function createMessage(
-  messageData: Omit<Message, "id" | "createdAt">
-): Message | { blocked: true; reason: string } {
+export function createMessage(messageData: Omit<Message, "id" | "createdAt">): Message | { blocked: true; reason: string } {
   const db = getDB();
   const settings = db.settings;
+
+  // Normalize body once (prevents .includes/.toLowerCase crash)
+  const body = asString(messageData.body);
+  const lowerBody = body.toLowerCase();
 
   if (settings.communicationControls.blockPhoneEmailSharing) {
     const phoneRegex = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\d{7,}/;
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
 
-    if (phoneRegex.test(messageData.body) || emailRegex.test(messageData.body)) {
+    if (phoneRegex.test(body) || emailRegex.test(body)) {
       const incident: Incident = {
         id: "incident_" + generateId(),
         type: "contact_share_attempt",
         severity: "high",
         actorUserId: messageData.fromUserId,
         studentId: messageData.studentId,
-        messageSnippet: messageData.body.substring(0, 100),
+        messageSnippet: body.substring(0, 100),
         createdAt: new Date().toISOString(),
       };
       db.incidents.push(incident);
@@ -1096,14 +1085,14 @@ export function createMessage(
 
   if (settings.communicationControls.blockExternalLinks) {
     const linkRegex = /https?:\/\/[^\s]+/i;
-    if (linkRegex.test(messageData.body)) {
+    if (linkRegex.test(body)) {
       const incident: Incident = {
         id: "incident_" + generateId(),
         type: "external_link_attempt",
         severity: "medium",
         actorUserId: messageData.fromUserId,
         studentId: messageData.studentId,
-        messageSnippet: messageData.body.substring(0, 100),
+        messageSnippet: body.substring(0, 100),
         createdAt: new Date().toISOString(),
       };
       db.incidents.push(incident);
@@ -1123,8 +1112,9 @@ export function createMessage(
     }
   }
 
-  const blockedKeywords = settings.communicationControls.blockedKeywords;
-  const lowerBody = messageData.body.toLowerCase();
+  // Normalize keywords (prevents kw.toLowerCase crash if array contains undefined)
+  const blockedKeywords = cleanStringArray(settings?.communicationControls?.blockedKeywords);
+
   const foundKeyword = blockedKeywords.find((kw) => lowerBody.includes(kw.toLowerCase()));
   if (foundKeyword) {
     const incident: Incident = {
@@ -1133,7 +1123,7 @@ export function createMessage(
       severity: "medium",
       actorUserId: messageData.fromUserId,
       studentId: messageData.studentId,
-      messageSnippet: messageData.body.substring(0, 100),
+      messageSnippet: body.substring(0, 100),
       createdAt: new Date().toISOString(),
     };
     db.incidents.push(incident);
@@ -1155,8 +1145,10 @@ export function createMessage(
   const message: Message = {
     id: "msg_" + generateId(),
     ...messageData,
+    body, // ensure stored message body is always a string
     createdAt: new Date().toISOString(),
   };
+
   db.messages.push(message);
   setDB(db);
   return message;
