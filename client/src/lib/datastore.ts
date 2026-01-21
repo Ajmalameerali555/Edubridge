@@ -86,7 +86,6 @@ export interface Session {
   createdAt: string;
 }
 
-
 export interface SessionReport {
   id: string;
   sessionId: string;
@@ -127,7 +126,6 @@ export interface Quiz {
   score?: number;
   createdAt: string;
 }
-
 
 export interface Note {
   id: string;
@@ -236,6 +234,11 @@ export interface Database {
   settings: Settings;
 }
 
+/** ---------- Safety helpers (prevents "filter of undefined") ---------- */
+function asArray<T>(v: T[] | undefined | null): T[] {
+  return Array.isArray(v) ? v : [];
+}
+
 function generateId(): string {
   return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 }
@@ -325,6 +328,54 @@ function getDefaultSettings(): Settings {
       footerText: "Empowering students through personalized learning",
     },
   };
+}
+
+/**
+ * Ensures DB object always has all required arrays/settings.
+ * This prevents runtime crashes like: Cannot read properties of undefined (reading 'filter')
+ */
+function normalizeDB(input: any): Database {
+  const defaults = seedDBNoWrite();
+
+  const db: Database = {
+    users: asArray<User>(input?.users ?? defaults.users),
+    students: asArray<Student>(input?.students ?? defaults.students),
+    tutors: asArray<Tutor>(input?.tutors ?? defaults.tutors),
+    questionnaires: asArray<Questionnaire>(input?.questionnaires ?? defaults.questionnaires),
+    sessions: asArray<Session>(input?.sessions ?? defaults.sessions),
+    sessionReports: asArray<SessionReport>(input?.sessionReports ?? defaults.sessionReports),
+    assignments: asArray<Assignment>(input?.assignments ?? defaults.assignments),
+    quizzes: asArray<Quiz>(input?.quizzes ?? defaults.quizzes),
+    notes: asArray<Note>(input?.notes ?? defaults.notes),
+    homework: asArray<Homework>(input?.homework ?? defaults.homework),
+    messages: asArray<Message>(input?.messages ?? defaults.messages),
+    incidents: asArray<Incident>(input?.incidents ?? defaults.incidents),
+    notifications: asArray<Notification>(input?.notifications ?? defaults.notifications),
+    settings: (input?.settings ?? defaults.settings) as Settings,
+  };
+
+  // Extra hardening of settings sub-keys (in case older DB versions exist)
+  db.settings = {
+    ...getDefaultSettings(),
+    ...db.settings,
+    decoderRules: { ...getDefaultSettings().decoderRules, ...(db.settings?.decoderRules ?? {}) },
+    communicationControls: {
+      ...getDefaultSettings().communicationControls,
+      ...(db.settings?.communicationControls ?? {}),
+      blockedKeywords: asArray<string>(db.settings?.communicationControls?.blockedKeywords),
+    },
+    sessionPolicies: { ...getDefaultSettings().sessionPolicies, ...(db.settings?.sessionPolicies ?? {}) },
+    templates: {
+      ...getDefaultSettings().templates,
+      ...(db.settings?.templates ?? {}),
+      homework: asArray(db.settings?.templates?.homework),
+      reports: asArray(db.settings?.templates?.reports),
+      tutorNotes: asArray(db.settings?.templates?.tutorNotes),
+    },
+    branding: { ...getDefaultSettings().branding, ...(db.settings?.branding ?? {}) },
+  };
+
+  return db;
 }
 
 function createSeedData(): Database {
@@ -577,15 +628,7 @@ function createSeedData(): Database {
   };
 
   return {
-    users: [
-      adminUser,
-      tutor1User,
-      tutor2User,
-      parent1User,
-      parent2User,
-      student1User,
-      student2User,
-    ],
+    users: [adminUser, tutor1User, tutor2User, parent1User, parent2User, student1User, student2User],
     students: [student1, student2],
     tutors: [tutor1, tutor2],
     questionnaires: [],
@@ -602,16 +645,30 @@ function createSeedData(): Database {
   };
 }
 
+/**
+ * Seed DB object without writing to localStorage.
+ * Used by normalizeDB() to fill missing keys.
+ */
+function seedDBNoWrite(): Database {
+  return createSeedData();
+}
+
 export function getDB(): Database {
   try {
     const stored = localStorage.getItem(DB_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      const normalized = normalizeDB(parsed);
+      // keep localStorage upgraded to the normalized schema
+      setDB(normalized);
+      return normalized;
     }
   } catch (e) {
     console.error("Error reading database:", e);
   }
-  return seedDB();
+  // No stored DB, create fresh
+  const fresh = seedDB();
+  return fresh;
 }
 
 export function setDB(db: Database): void {
@@ -740,7 +797,7 @@ export function createQuestionnaire(data: Omit<Questionnaire, "id" | "createdAt"
     createdAt: new Date().toISOString(),
   };
   db.questionnaires.push(questionnaire);
-  
+
   const notification: Notification = {
     id: "notif_" + generateId(),
     forRole: "admin",
@@ -750,7 +807,7 @@ export function createQuestionnaire(data: Omit<Questionnaire, "id" | "createdAt"
     read: false,
   };
   db.notifications.push(notification);
-  
+
   setDB(db);
   return questionnaire;
 }
@@ -814,7 +871,6 @@ export function updateSession(id: string, updates: Partial<Session>): Session | 
   return db.sessions[index];
 }
 
-
 export function getSessionReportsByStudentId(studentId: string): SessionReport[] {
   const db = getDB();
   return db.sessionReports
@@ -834,9 +890,14 @@ export function getSessionReportBySessionId(sessionId: string): SessionReport | 
   return db.sessionReports.find((r) => r.sessionId === sessionId);
 }
 
-export function upsertSessionReport(report: Omit<SessionReport, "id" | "createdAt"> & { id?: string; createdAt?: string }): SessionReport {
+export function upsertSessionReport(
+  report: Omit<SessionReport, "id" | "createdAt"> & { id?: string; createdAt?: string }
+): SessionReport {
   const db = getDB();
-  const existingIndex = report.id ? db.sessionReports.findIndex((r) => r.id === report.id) : db.sessionReports.findIndex((r) => r.sessionId === report.sessionId);
+  const existingIndex = report.id
+    ? db.sessionReports.findIndex((r) => r.id === report.id)
+    : db.sessionReports.findIndex((r) => r.sessionId === report.sessionId);
+
   const normalized: SessionReport = {
     id: report.id ?? "report_" + generateId(),
     createdAt: report.createdAt ?? new Date().toISOString(),
@@ -925,7 +986,7 @@ export function createNote(noteData: Omit<Note, "id" | "createdAt">): Note {
     createdAt: new Date().toISOString(),
   };
   db.notes.push(note);
-  
+
   if (noteData.issues.length > 0) {
     const notification: Notification = {
       id: "notif_" + generateId(),
@@ -937,7 +998,7 @@ export function createNote(noteData: Omit<Note, "id" | "createdAt">): Note {
     };
     db.notifications.push(notification);
   }
-  
+
   setDB(db);
   return note;
 }
@@ -996,14 +1057,16 @@ export function getAllHomework(): Homework[] {
   return getDB().homework;
 }
 
-export function createMessage(messageData: Omit<Message, "id" | "createdAt">): Message | { blocked: true; reason: string } {
+export function createMessage(
+  messageData: Omit<Message, "id" | "createdAt">
+): Message | { blocked: true; reason: string } {
   const db = getDB();
   const settings = db.settings;
-  
+
   if (settings.communicationControls.blockPhoneEmailSharing) {
     const phoneRegex = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\d{7,}/;
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    
+
     if (phoneRegex.test(messageData.body) || emailRegex.test(messageData.body)) {
       const incident: Incident = {
         id: "incident_" + generateId(),
@@ -1015,7 +1078,7 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
         createdAt: new Date().toISOString(),
       };
       db.incidents.push(incident);
-      
+
       const notification: Notification = {
         id: "notif_" + generateId(),
         forRole: "admin",
@@ -1025,12 +1088,12 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
         read: false,
       };
       db.notifications.push(notification);
-      
+
       setDB(db);
       return { blocked: true, reason: "Phone numbers and email addresses cannot be shared in messages." };
     }
   }
-  
+
   if (settings.communicationControls.blockExternalLinks) {
     const linkRegex = /https?:\/\/[^\s]+/i;
     if (linkRegex.test(messageData.body)) {
@@ -1044,7 +1107,7 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
         createdAt: new Date().toISOString(),
       };
       db.incidents.push(incident);
-      
+
       const notification: Notification = {
         id: "notif_" + generateId(),
         forRole: "admin",
@@ -1054,12 +1117,12 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
         read: false,
       };
       db.notifications.push(notification);
-      
+
       setDB(db);
       return { blocked: true, reason: "External links cannot be shared in messages." };
     }
   }
-  
+
   const blockedKeywords = settings.communicationControls.blockedKeywords;
   const lowerBody = messageData.body.toLowerCase();
   const foundKeyword = blockedKeywords.find((kw) => lowerBody.includes(kw.toLowerCase()));
@@ -1074,7 +1137,7 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
       createdAt: new Date().toISOString(),
     };
     db.incidents.push(incident);
-    
+
     const notification: Notification = {
       id: "notif_" + generateId(),
       forRole: "admin",
@@ -1084,11 +1147,11 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
       read: false,
     };
     db.notifications.push(notification);
-    
+
     setDB(db);
     return { blocked: true, reason: `Messages cannot contain restricted words like "${foundKeyword}".` };
   }
-  
+
   const message: Message = {
     id: "msg_" + generateId(),
     ...messageData,
@@ -1101,9 +1164,9 @@ export function createMessage(messageData: Omit<Message, "id" | "createdAt">): M
 
 export function getMessagesByThreadId(threadId: string): Message[] {
   const db = getDB();
-  return db.messages.filter((m) => m.threadId === threadId).sort((a, b) => 
-    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
+  return db.messages
+    .filter((m) => m.threadId === threadId)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 }
 
 export function getMessagesByUserId(userId: string): Message[] {
@@ -1128,7 +1191,7 @@ export function createIncident(incidentData: Omit<Incident, "id" | "createdAt">)
     createdAt: new Date().toISOString(),
   };
   db.incidents.push(incident);
-  
+
   const notification: Notification = {
     id: "notif_" + generateId(),
     forRole: "admin",
@@ -1138,7 +1201,7 @@ export function createIncident(incidentData: Omit<Incident, "id" | "createdAt">)
     read: false,
   };
   db.notifications.push(notification);
-  
+
   setDB(db);
   return incident;
 }
@@ -1149,9 +1212,9 @@ export function getAllIncidents(): Incident[] {
 
 export function getNotificationsByRole(role: UserRole): Notification[] {
   const db = getDB();
-  return db.notifications.filter((n) => n.forRole === role).sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  return db.notifications
+    .filter((n) => n.forRole === role)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
 export function markNotificationAsRead(id: string): void {
@@ -1183,7 +1246,7 @@ export function deriveTrackFromAnswers(answers: QuestionnaireAnswers): Questionn
     language: 70,
     foundation: 70,
   };
-  
+
   if (answers.learningStyle === "visual") {
     track = "Visual Learner Track";
   } else if (answers.learningStyle === "auditory") {
@@ -1193,20 +1256,20 @@ export function deriveTrackFromAnswers(answers: QuestionnaireAnswers): Questionn
   } else if (answers.learningStyle === "reading") {
     track = "Reading/Writing Track";
   }
-  
+
   if (answers.focusAttention === "easily_distracted" || answers.focusAttention === "struggles") {
     blockers.push("focus");
     signals.confidence -= 15;
   }
-  
+
   if (answers.studyHabits === "inconsistent" || answers.studyHabits === "needs_help") {
     blockers.push("memory");
     signals.memory -= 15;
   }
-  
+
   if (answers.motivation === "low" || answers.motivation === "extrinsic_only") {
     signals.confidence -= 10;
   }
-  
+
   return { track, blockers, signals };
 }
