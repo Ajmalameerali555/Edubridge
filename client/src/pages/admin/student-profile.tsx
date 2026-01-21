@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { useParams, Link } from "wouter";
 import { PortalLayout } from "@/components/portal/PortalLayout";
@@ -54,6 +53,7 @@ async function generateSessionReport(payload: {
     const data = await res.json().catch(() => ({}));
     throw new Error(data?.message || "Failed to generate report");
   }
+
   return res.json() as Promise<{
     overallScore: number;
     summary: string;
@@ -67,7 +67,32 @@ export default function AdminStudentProfile() {
   const params = useParams<{ id: string }>();
   const { toast } = useToast();
 
-  const student = getStudentById(params.id);
+  const studentId = params?.id;
+
+  // Guard: missing route param
+  if (!studentId) {
+    return (
+      <RouteGuard roles={["admin"]}>
+        <PortalLayout role="admin">
+          <div className="p-6">
+            <Card>
+              <CardContent className="py-10 text-center text-muted-foreground">
+                <GraduationCap className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                <p>Invalid student id.</p>
+                <div className="mt-4">
+                  <Link href="/admin/students">
+                    <Button variant="outline">Back to Students</Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </PortalLayout>
+      </RouteGuard>
+    );
+  }
+
+  const student = getStudentById(studentId);
   const user = student ? getUserById(student.userId) : undefined;
 
   const [activeTab, setActiveTab] = React.useState("overview");
@@ -96,19 +121,26 @@ export default function AdminStudentProfile() {
     );
   }
 
-  const sessions = getSessionsByStudentId(student.id).sort((a, b) => a.startAt.localeCompare(b.startAt));
-  const homework = getHomeworkByStudentId(student.id);
-  const assignments = getAssignmentsByStudentId(student.id);
-  const quizzes = getQuizzesByStudentId(student.id);
+  // IMPORTANT: ensure arrays (prevents filter/sort crash)
+  const sessions = (getSessionsByStudentId(student.id) ?? [])
+    .slice()
+    .sort((a, b) => (a.startAt || "").localeCompare(b.startAt || ""));
+
+  const homework = getHomeworkByStudentId(student.id) ?? [];
+  const assignments = getAssignmentsByStudentId(student.id) ?? [];
+  const quizzes = getQuizzesByStudentId(student.id) ?? [];
 
   const studentName = `${user.firstName} ${user.lastName}`.trim();
 
   const onGenerateReport = async (session: Session) => {
     try {
       setBusySessionId(session.id);
-      const tutorUser = getUserById(session.tutorId.replace("tutor_", "user_")) || undefined;
 
+      // Prefer real mapping: tutor -> tutor.userId -> user
+      const tutor = getTutorById(session.tutorId);
+      const tutorUser = tutor ? getUserById(tutor.userId) : undefined;
       const tutorName = tutorUser ? `${tutorUser.firstName} ${tutorUser.lastName}`.trim() : "Tutor";
+
       const tutorNotes = (notesBySession[session.id] || "").trim();
 
       const ai = await generateSessionReport({
@@ -136,11 +168,17 @@ export default function AdminStudentProfile() {
       toast({ title: "Report generated", description: "AI report saved to this student profile." });
       setActiveTab("reports");
     } catch (e: any) {
-      toast({ title: "Could not generate report", description: e?.message || "Unknown error", variant: "destructive" });
+      toast({
+        title: "Could not generate report",
+        description: e?.message || "Unknown error",
+        variant: "destructive",
+      });
     } finally {
       setBusySessionId(null);
     }
   };
+
+  const subjects = student.subjects ?? [];
 
   return (
     <RouteGuard roles={["admin"]}>
@@ -174,9 +212,15 @@ export default function AdminStudentProfile() {
             <CardContent className="p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-muted-foreground">Subjects:</span>
-                {student.subjects.map((s) => (
-                  <Badge key={s} variant="secondary">{s}</Badge>
-                ))}
+                {subjects.length === 0 ? (
+                  <span className="text-sm text-muted-foreground">—</span>
+                ) : (
+                  subjects.map((s) => (
+                    <Badge key={s} variant="secondary">
+                      {s}
+                    </Badge>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -204,7 +248,9 @@ export default function AdminStudentProfile() {
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">Joined</div>
-                    <div className="font-medium">{format(parseISO(student.createdAt), "dd MMM yyyy")}</div>
+                    <div className="font-medium">
+                      {student.createdAt ? format(parseISO(student.createdAt), "dd MMM yyyy") : "—"}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -232,10 +278,12 @@ export default function AdminStudentProfile() {
 
             <TabsContent value="sessions" className="mt-4 space-y-3">
               {sessions.length === 0 ? (
-                <Card><CardContent className="py-10 text-center text-muted-foreground">
-                  <Calendar className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>No classes found.</p>
-                </CardContent></Card>
+                <Card>
+                  <CardContent className="py-10 text-center text-muted-foreground">
+                    <Calendar className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                    <p>No classes found.</p>
+                  </CardContent>
+                </Card>
               ) : (
                 sessions.map((s) => {
                   const report = getSessionReportBySessionId(s.id);
@@ -250,7 +298,8 @@ export default function AdminStudentProfile() {
                               <Badge variant="outline">{s.status}</Badge>
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {format(parseISO(s.startAt), "dd MMM yyyy, hh:mm a")} • {s.durationMin} min
+                              {s.startAt ? format(parseISO(s.startAt), "dd MMM yyyy, hh:mm a") : "—"} • {s.durationMin}{" "}
+                              min
                             </div>
                           </div>
 
@@ -278,10 +327,7 @@ export default function AdminStudentProfile() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Button
-                            onClick={() => onGenerateReport(s)}
-                            disabled={busySessionId === s.id}
-                          >
+                          <Button onClick={() => onGenerateReport(s)} disabled={busySessionId === s.id}>
                             <Sparkles className="w-4 h-4 mr-2" />
                             {busySessionId === s.id ? "Generating..." : "Generate AI report"}
                           </Button>
@@ -300,15 +346,18 @@ export default function AdminStudentProfile() {
             </TabsContent>
 
             <TabsContent value="reports" className="mt-4 space-y-3">
-              {sessions.filter((s) => getSessionReportBySessionId(s.id)).length === 0 ? (
-                <Card><CardContent className="py-10 text-center text-muted-foreground">
-                  <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>No AI reports yet. Generate one from a class.</p>
-                </CardContent></Card>
+              {(sessions ?? []).filter((s) => !!getSessionReportBySessionId(s.id)).length === 0 ? (
+                <Card>
+                  <CardContent className="py-10 text-center text-muted-foreground">
+                    <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                    <p>No AI reports yet. Generate one from a class.</p>
+                  </CardContent>
+                </Card>
               ) : (
-                sessions.map((s) => {
+                (sessions ?? []).map((s) => {
                   const r = getSessionReportBySessionId(s.id);
                   if (!r) return null;
+
                   return (
                     <Card key={r.id}>
                       <CardContent className="p-4 space-y-3">
@@ -316,7 +365,7 @@ export default function AdminStudentProfile() {
                           <div>
                             <div className="font-semibold">{s.subject}</div>
                             <div className="text-sm text-muted-foreground">
-                              {format(parseISO(s.startAt), "dd MMM yyyy, hh:mm a")}
+                              {s.startAt ? format(parseISO(s.startAt), "dd MMM yyyy, hh:mm a") : "—"}
                             </div>
                           </div>
                           <Badge variant="secondary">Score: {r.overallScore}/10</Badge>
@@ -333,19 +382,25 @@ export default function AdminStudentProfile() {
                           <div>
                             <div className="text-sm font-medium">Went well</div>
                             <ul className="list-disc ml-5 text-sm text-muted-foreground">
-                              {r.whatWentWell.map((x, i) => <li key={i}>{x}</li>)}
+                              {(r.whatWentWell ?? []).map((x, i) => (
+                                <li key={i}>{x}</li>
+                              ))}
                             </ul>
                           </div>
                           <div>
                             <div className="text-sm font-medium">To improve</div>
                             <ul className="list-disc ml-5 text-sm text-muted-foreground">
-                              {r.whatToImprove.map((x, i) => <li key={i}>{x}</li>)}
+                              {(r.whatToImprove ?? []).map((x, i) => (
+                                <li key={i}>{x}</li>
+                              ))}
                             </ul>
                           </div>
                           <div>
                             <div className="text-sm font-medium">Action items</div>
                             <ul className="list-disc ml-5 text-sm text-muted-foreground">
-                              {r.actionItems.map((x, i) => <li key={i}>{x}</li>)}
+                              {(r.actionItems ?? []).map((x, i) => (
+                                <li key={i}>{x}</li>
+                              ))}
                             </ul>
                           </div>
                         </div>
@@ -365,10 +420,12 @@ export default function AdminStudentProfile() {
 
             <TabsContent value="homework" className="mt-4 space-y-3">
               {homework.length === 0 ? (
-                <Card><CardContent className="py-10 text-center text-muted-foreground">
-                  <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>No homework items.</p>
-                </CardContent></Card>
+                <Card>
+                  <CardContent className="py-10 text-center text-muted-foreground">
+                    <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                    <p>No homework items.</p>
+                  </CardContent>
+                </Card>
               ) : (
                 homework.map((h) => (
                   <Card key={h.id}>
@@ -376,7 +433,9 @@ export default function AdminStudentProfile() {
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div>
                           <div className="font-semibold">{h.title}</div>
-                          <div className="text-sm text-muted-foreground">{h.subject} • Due {format(parseISO(h.dueAt), "dd MMM yyyy")}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {h.subject} • Due {h.dueAt ? format(parseISO(h.dueAt), "dd MMM yyyy") : "—"}
+                          </div>
                         </div>
                         <Badge variant="outline">{h.status}</Badge>
                       </div>
@@ -388,10 +447,12 @@ export default function AdminStudentProfile() {
 
             <TabsContent value="assignments" className="mt-4 space-y-3">
               {assignments.length === 0 ? (
-                <Card><CardContent className="py-10 text-center text-muted-foreground">
-                  <ClipboardList className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>No assignments yet.</p>
-                </CardContent></Card>
+                <Card>
+                  <CardContent className="py-10 text-center text-muted-foreground">
+                    <ClipboardList className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                    <p>No assignments yet.</p>
+                  </CardContent>
+                </Card>
               ) : (
                 assignments.map((a) => (
                   <Card key={a.id}>
@@ -399,11 +460,15 @@ export default function AdminStudentProfile() {
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div>
                           <div className="font-semibold">{a.title}</div>
-                          <div className="text-sm text-muted-foreground">{a.subject} • Due {format(parseISO(a.dueAt), "dd MMM yyyy")}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {a.subject} • Due {a.dueAt ? format(parseISO(a.dueAt), "dd MMM yyyy") : "—"}
+                          </div>
                         </div>
                         <Badge variant="outline">{a.status}</Badge>
                       </div>
-                      {a.feedback && <div className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">{a.feedback}</div>}
+                      {a.feedback && (
+                        <div className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">{a.feedback}</div>
+                      )}
                     </CardContent>
                   </Card>
                 ))
@@ -412,10 +477,12 @@ export default function AdminStudentProfile() {
 
             <TabsContent value="quizzes" className="mt-4 space-y-3">
               {quizzes.length === 0 ? (
-                <Card><CardContent className="py-10 text-center text-muted-foreground">
-                  <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p>No quizzes yet.</p>
-                </CardContent></Card>
+                <Card>
+                  <CardContent className="py-10 text-center text-muted-foreground">
+                    <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                    <p>No quizzes yet.</p>
+                  </CardContent>
+                </Card>
               ) : (
                 quizzes.map((q) => (
                   <Card key={q.id}>
